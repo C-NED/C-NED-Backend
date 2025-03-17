@@ -1,4 +1,7 @@
 # 🚀 C-NED Backend  
+
+🔥 **배포된 서비스 링크:** 👉 [C-NED 실시간 API](https://port-0-c-ned-backend-m8d025yhc9939d4f.sel4.cloudtype.app/docs#/)  
+
 **도로 노면 장애 대응을 위한 AI 기반 실시간 안전 모니터링 및 정보 안내 통합 서비스**  
 
 이 레포지토리는 **앱(Doby)과 관리자 웹(Dorocy)의 백엔드 API**를 담당합니다.  

@@ -1,6 +1,6 @@
 # 🚀 C-NED Backend  
 
-🔥 **배포된 서비스 링크:** 👉 [C-NED 실시간 API](https://port-0-c-ned-backend-m8d025yhc9939d4f.sel4.cloudtype.app/docs#/)  
+🔥 **배포된 서비스 링크:** 👉 [C-NED API 문서](https://port-0-c-ned-backend-m8d025yhc9939d4f.sel4.cloudtype.app/docs#/)  
 
 **도로 노면 장애 대응을 위한 AI 기반 실시간 안전 모니터링 및 정보 안내 통합 서비스**  
 
@@ -30,4 +30,3 @@ FastAPI를 기반으로 개발되었으며, AI 및 지도 데이터를 활용한
 ---
 
 🔥 프로젝트가 점점 완성되어 가면서 README도 계속 업데이트될 예정입니다!  
-추가 기능 및 개선 사항이 있으면 언제든 의견 주세요! 😆🚀

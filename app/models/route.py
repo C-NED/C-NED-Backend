@@ -43,11 +43,3 @@ class RouteResponse(BaseModel):
     message: str = Field(..., example="길찾기를 성공하였습니다.")
     currentDateTime: datetime = Field(..., example="2024-08-27T17:17:21")
     route: Route
-
-class Model404(BaseModel):
-    errormessage : str = Field(..., example="Not found or invalid path")
-    errorcode : int = Field(..., example=404)
-
-class Model422(BaseModel):
-    errormessage : str = Field(..., example="Invalid input")
-    errorcode : int = Field(..., example=422)

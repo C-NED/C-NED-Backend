@@ -37,22 +37,36 @@ def find_traffics(type,roadNo,dicType):
         return {"error": "Failed to fetch route", "status_code": response.status_code,"status_msg":response.text}
     
 
-def find_outbreaks(type,eventType):
+import requests
+
+def find_outbreaks(type, eventType, minX, minY, maxX, maxY):
     headers = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/"
+        "User-Agent": "Mozilla/5.0"
     }
 
     params = {
         "apiKey": ROAD_API_KEY,
-        "type" : f"{type}",
-        "eventType" : f"{eventType}",
+        "type": type,
+        "eventType": eventType,
         "getType": "json"
     }
 
-    response = requests.get("https://openapi.its.go.kr:9443/eventInfo",headers=headers, params=params)
+    # 네 개의 좌표 값이 모두 존재하는 경우만 params에 추가
+    if all([minX, minY, maxX, maxY]):
+        params.update({
+            "minX": minX,
+            "minY": minY,
+            "maxX": maxX,
+            "maxY": maxY
+        })
+
+    response = requests.get("https://openapi.its.go.kr:9443/eventInfo", headers=headers, params=params)
 
     if response.status_code == 200:
-        data = response.json()
-        return data
-    else : 
-        return {"error": "Failed to fetch route", "status_code": response.status_code,"status_msg":response.text}
+        return response.json()
+    else:
+        return {
+            "error": "Failed to fetch route",
+            "status_code": response.status_code,
+            "status_msg": response.text
+        }

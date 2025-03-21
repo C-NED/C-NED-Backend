@@ -5,6 +5,8 @@ from app.routes.navigation import router as navigation
 from app.routes.location import router as location
 from app.routes.search import router as search
 from app.routes.gps import router as gps
+from app.routes.traffics import router as traffics
+from app.routes.outbreak import router as outbreak
 
 app = FastAPI(
     title="🚀Doby API",
@@ -32,3 +34,6 @@ app.include_router(navigation,prefix="/navigation",tags=["Navigation"])
 app.include_router(location,prefix="/navigation",tags=["Navigation"])
 app.include_router(search,prefix="/navigation",tags=["Navigation"])
 app.include_router(gps,prefix="/navigation",tags=["Navigation"])
+
+app.include_router(traffics,prefix="/navigation",tags=["Navigation"])
+app.include_router(outbreak,prefix="/navigation",tags=["Navigation"])

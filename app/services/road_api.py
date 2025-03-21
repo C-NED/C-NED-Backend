@@ -70,3 +70,33 @@ def find_outbreaks(type, eventType, minX, minY, maxX, maxY):
             "status_code": response.status_code,
             "status_msg": response.text
         }
+
+def find_caution_sections(minX, maxX, minY, maxY):
+    headers = {
+        "User-Agent": "Mozilla/5.0"
+    }
+
+    params = {
+        "apiKey": ROAD_API_KEY,
+        "minX": f"{minX}",
+        "maxX": f"{maxX}",
+        "minY": f"{minY}",
+        "maxY": f"{maxY}",
+        "getType": "json"
+    }
+
+    response = requests.get("https://openapi.its.go.kr:9443/posIncidentInfo", headers=headers, params=params)
+
+    print("요청 URL:", response.url)
+    print("상태 코드:", response.status_code)
+    print("응답:", response.text)
+
+    if response.status_code == 200:
+        data = response.json()
+        return data
+    else:
+        return {
+            "error": "Failed to fetch route",
+            "status_code": response.status_code,
+            "status_msg": response.text
+        }

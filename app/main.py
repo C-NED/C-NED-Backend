@@ -5,6 +5,8 @@ from app.routes.navigation import router as navigation
 from app.routes.location import router as location
 from app.routes.search import router as search
 from app.routes.gps import router as gps
+from app.routes.traffics import router as traffics
+from app.routes.alert import router as alert
 
 app = FastAPI(
     title="🚀Doby API",
@@ -28,7 +30,10 @@ async def root():
     # /docs 경로로 리디렉션
     return RedirectResponse(url="/docs")
 
-app.include_router(navigation,prefix="/navigation",tags=["Navigation"])
-app.include_router(location,prefix="/navigation",tags=["Navigation"])
-app.include_router(search,prefix="/navigation",tags=["Navigation"])
-app.include_router(gps,prefix="/navigation",tags=["Navigation"])
+app.include_router(navigation,prefix="/navigation",tags=["Route"])
+app.include_router(location,prefix="/navigation",tags=["Route"])
+app.include_router(search,prefix="/navigation",tags=["Route"])
+app.include_router(gps,prefix="/navigation",tags=["Route"])
+
+app.include_router(traffics,prefix="/navigation",tags=["Navigation"])
+app.include_router(alert,prefix="/navigation",tags=["ALERT"])

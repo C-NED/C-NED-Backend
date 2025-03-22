@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends,Query
 # from app.models.traffics import TrafficResponse
 from app.models.default import Model404,Model422
-from app.services.road_api import find_outbreaks,find_caution_sections
+from app.services.road_api import find_outbreaks,find_caution_sections,find_dangerous_incident
 from typing import Optional
-from app.models.outbreak import OutbreakResponse
+from app.models.alert import OutbreakResponse
 
 router = APIRouter()
 
@@ -38,3 +38,10 @@ def get_caution_sections(minX : Optional[float] = Query(default=None,example=126
                         
     return find_caution_sections(minX,maxX,minY,maxY)
 
+@router.get("""/dangerous_incident""",
+         summary="위험물질 운송차량 사고정보 API",
+         description="위험물질 운송차량 사고 정보를 반환하는 API입니다.",
+         responses={200:{"description":"요청 성공"},404:{"description":"검색 실패","model":Model404},422:{"description":"입력값 오류","model":Model422}})
+
+def get_dangerous_incident():
+    return find_dangerous_incident()

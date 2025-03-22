@@ -30,10 +30,10 @@ async def root():
     # /docs 경로로 리디렉션
     return RedirectResponse(url="/docs")
 
-app.include_router(navigation,prefix="/navigation",tags=["Navigation"])
-app.include_router(location,prefix="/navigation",tags=["Navigation"])
-app.include_router(search,prefix="/navigation",tags=["Navigation"])
-app.include_router(gps,prefix="/navigation",tags=["Navigation"])
+app.include_router(navigation,prefix="/navigation",tags=["Route"])
+app.include_router(location,prefix="/navigation",tags=["Route"])
+app.include_router(search,prefix="/navigation",tags=["Route"])
+app.include_router(gps,prefix="/navigation",tags=["Route"])
 
-app.include_router(traffics,prefix="/navigation",tags=["Road"])
-app.include_router(alert,prefix="/navigation",tags=["Road"])
+app.include_router(traffics,prefix="/navigation",tags=["Navigation"])
+app.include_router(alert,prefix="/navigation",tags=["ALERT"])

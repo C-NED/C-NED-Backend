@@ -100,3 +100,21 @@ def find_caution_sections(minX, maxX, minY, maxY):
             "status_code": response.status_code,
             "status_msg": response.text
         }
+    
+def find_dangerous_incident():
+    params = {
+        "apiKey" : ROAD_API_KEY,
+        "getType" : "json"
+    }
+
+    response = requests.get("https://openapi.its.go.kr:9443/dangerousCarInfo", params=params)
+
+    if response.status_code == 200:
+        data = response.json()
+        return data
+    else:
+        return {
+            "error": "Failed to fetch route",
+            "status_code": response.status_code,
+            "status_msg": response.text
+        }

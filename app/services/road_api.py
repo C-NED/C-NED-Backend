@@ -6,7 +6,7 @@ from app.key_collection import ROAD_API_KEY
 from fastapi import APIRouter, Depends,Query
 
 
-def find_traffics(type,roadNo,dicType):
+def find_traffics(type,roadNo,dicType,minX,maxX,minY,maxY):
     # headers  = {
     #     "resultcode" : 0,
     #     "resultmsg" : "정상 처리되었습니다."
@@ -20,6 +20,10 @@ def find_traffics(type,roadNo,dicType):
         "type": f"{type}",
         "routeNo": f"{roadNo}",
         "dicType": f"{dicType}",
+        "minX" : f"{minX}",
+        "maxX" : f"{maxX}",
+        "minY" : f"{minY}",
+        "maxY" : f"{maxY}",
         "getType": "json"
     }
 
@@ -63,7 +67,16 @@ def find_outbreaks(type, eventType, minX, minY, maxX, maxY):
     response = requests.get("https://openapi.its.go.kr:9443/eventInfo", headers=headers, params=params)
 
     if response.status_code == 200:
-        return response.json()
+        data = response.json()
+        if data.get("body"):
+            body_info = data["body"]
+            return {
+                "totalCount" : body_info["totalCount"],
+                "items" : body_info["items"]
+            }
+        else:
+            return data
+    
     else:
         return {
             "error": "Failed to fetch route",
@@ -93,7 +106,15 @@ def find_caution_sections(minX, maxX, minY, maxY):
 
     if response.status_code == 200:
         data = response.json()
-        return data
+        if data.get("body"):
+            body_info = data["body"]
+            return {
+                "totalCount" : body_info["totalCount"],
+                "items" : body_info["items"]
+            }
+        else:
+            return data
+    
     else:
         return {
             "error": "Failed to fetch route",
@@ -111,7 +132,40 @@ def find_dangerous_incident():
 
     if response.status_code == 200:
         data = response.json()
-        return data
+        if data.get("body"):
+            body_info = data["body"]
+            return {
+                "totalCount" : body_info["totalCount"],
+                "items" : body_info["items"]
+            }
+        else:
+            return data
+    
+    else:
+        return {
+            "error": "Failed to fetch route",
+            "status_code": response.status_code,
+            "status_msg": response.text
+        }
+    
+def find_VSL():
+    params = {
+        "apiKey" : ROAD_API_KEY,
+        "getType" : "jSON"
+    }
+
+    response = requests.get("https://openapi.its.go.kr:9443/vslInfo",params)
+
+    if response.status_code == 200:
+        data = response.json()
+        if data.get("body"):
+            body_info = data["body"]
+            return {
+                "totalCount" : body_info["totalCount"],
+                "items" : body_info["items"]
+            }
+        else:
+            return data
     else:
         return {
             "error": "Failed to fetch route",

@@ -9,12 +9,32 @@
 
 ## 🧱 데이터베이스 구조
 
-앱(Doby) 및 관리자 웹(Dorocy)의 통합 ERD 설계가 완료되었습니다.  
-- 주요 테이블: `navigation`, `path`, `road_section`, `outbreak`, `caution`, `dangerous_incident`, `vsl`, `user`, `admin`, `refresh_token`
-- 실시간 경로 데이터와 이벤트 기반 교통 정보 관리를 지원하는 구조입니다.
+앱 **Doby** 및 관리자 웹 **Dorocy**에서 사용되는 **통합 DB 구조 설계가 완료**되었습니다.  
+주요 기능에 따라 테이블이 구분되며, 실시간 주행 정보 및 AI 감지 데이터를 효율적으로 처리할 수 있도록 설계되었습니다.
 
-<img src="docs/images/cned_url_class_diagram.jpg" width="600"/>
-<img src="docs/images/cned_crows_foot.jpg" width="500"/>
+- 📍 주요 테이블:
+  - `navigation`, `path`, `road_section` – 경로 및 주행 정보
+  - `outbreak`, `caution`, `dangerous_incident`, `vsl` – 교통 돌발 상황 및 위험 정보
+  - `user`, `admin`, `refresh_token` – 사용자 및 인증 관리
+
+> 이 설계는 실시간 데이터 스트리밍(WebSocket)과 이벤트 기반 데이터 저장 구조를 모두 고려하여 구축되었습니다.
+
+---
+
+### 🔹 시스템 추상 구조 (Crow’s Foot 모델)
+
+> 각 주요 엔터티 간의 관계를 **Crow’s Foot 다이어그램**으로 표현한 추상 설계입니다.
+
+<img src="docs/images/cned_crows_foot.jpg" width="550"/>
+
+---
+
+### 🔸 상세 테이블 설계 (URL 클래스 다이어그램)
+
+> 실제 구현에 사용된 **정규화된 테이블 구조와 필드 정의**를 포함한 상세 설계입니다.
+
+<img src="docs/images/cned_url_class_diagram.jpg" width="620"/>
+
 
 > 📘 **자세한 필드 설명과 제약 조건은 [Notion 문서](https://pouncing-toothpaste-a07.notion.site/DB-1babb4312b7680368fe4f63a87575891?pvs=4)를 참고해주세요.**
 

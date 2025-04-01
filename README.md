@@ -1,3 +1,4 @@
+(2025.3.25 기준)
 # 🚀 C-NED Backend  
 
 🔥 **배포된 서비스 링크:** 👉 [C-NED API 문서](https://port-0-c-ned-backend-m8d025yhc9939d4f.sel4.cloudtype.app/docs#/)  
@@ -20,11 +21,11 @@ FastAPI를 기반으로 개발되었으며, AI 및 지도 데이터를 활용한
 
 ## 🔧 **기술 스택**  
 - **백엔드**: FastAPI  
-- **데이터베이스**: (추후 추가)  
-- **외부 API**: 네이버 지도 API  
+- **데이터베이스**: MariaDB + Redis(예정)
+- **외부 API**: 네이버 지도 API , ITS 국가정보교통센터 API 
 
 ## 🚧 **현재 개발 진행 상황**  
-✔️ **앱 (Doby)**: 50% 진행 중  
+✔️ **앱 (Doby)**: 80% 진행 중  
 ✔️ **웹 (Dorocy)**: (진행 예정)  
 
 ---

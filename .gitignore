@@ -1,2 +1,4 @@
 .env
 makekey.py
+__pycache__/
+*.pyc

@@ -8,6 +8,7 @@ from app.routes.gps import router as gps
 from app.routes.traffics import router as traffics
 from app.routes.alert import router as alert
 from fastapi.staticfiles import StaticFiles
+from app.auth.routes import router as token
 
 app = FastAPI(
     title="🚀Doby API",
@@ -53,17 +54,18 @@ app = FastAPI(
     swagger_ui_parameters={"customCssUrl": "/static/docCustom.css"},  # Ensure this URL is correct
 )
 
-@app.get("/", include_in_schema=False)
+@app.get("/")
 async def root():
     # /docs 경로로 리디렉션
     return RedirectResponse(url="/docs")
 
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
-app.include_router(navigation,prefix="/navigation",tags=["navigation"])
-app.include_router(location,prefix="/navigation",tags=["navigation"])
-app.include_router(search,prefix="/navigation",tags=["navigation"])
-app.include_router(gps,prefix="/navigation",tags=["navigation"])
+# app.include_router(navigation,prefix="/navigation",tags=["navigation"])
+# app.include_router(location,prefix="/navigation",tags=["navigation"])
+# app.include_router(search,prefix="/navigation",tags=["navigation"])
+# app.include_router(gps,prefix="/navigation",tags=["navigation"])
 
-app.include_router(traffics,prefix="/alert",tags=["Alert"])
-app.include_router(alert,prefix="/alert",tags=["Alert"])
+# app.include_router(traffics,prefix="/alert",tags=["Alert"])
+# app.include_router(alert,prefix="/alert",tags=["Alert"])
+app.include_router(token,prefix="/auth",tags=["token"])

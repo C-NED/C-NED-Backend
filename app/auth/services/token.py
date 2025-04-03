@@ -46,7 +46,7 @@ def create_refresh_token(db: Session, p_id: int, p_type: str):
     return refresh_token
 
 
-def refresh_token(db: Session, p_id: int, p_type: str):
+def manage_refresh_token(db: Session, p_id: int, p_type: str):
     # 기존 리프레시 토큰 확인
     existing_token = db.query(RefreshToken).filter_by(principal_id=p_id, principal_type=p_type).first()
 

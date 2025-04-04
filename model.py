@@ -112,14 +112,13 @@ class FavoritePlace(Base):
 class Navigation(Base):
     __tablename__ = 'navigation'
     __table_args__ = (
-        ForeignKeyConstraint(['user_id'], ['user.user_id'], ondelete='CASCADE', onupdate='CASCADE', name='navigation_ibfk_1'),
         Index('end_loc', 'end_loc'),
         Index('start_loc', 'start_loc'),
-        Index('user_id', 'user_id')
     )
 
     navigation_id: Mapped[int] = mapped_column(INTEGER(11), primary_key=True)
-    user_id: Mapped[int] = mapped_column(INTEGER(11))
+    principal_id: Mapped[int] = mapped_column(INTEGER(11))
+    principal_type: Mapped[str] = mapped_column(Enum('USER','ROAD_ADMIN', 'SERVICE_ADMIN'))
     start_loc: Mapped[Point] = mapped_column(Point)
     end_loc: Mapped[Point] = mapped_column(Point)
     arrival_time: Mapped[datetime.datetime] = mapped_column(DateTime)
@@ -132,7 +131,6 @@ class Navigation(Base):
     created_at: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime, server_default=text('current_timestamp()'))
     updated_at: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime, server_default=text('current_timestamp() ON UPDATE current_timestamp()'))
 
-    user: Mapped['User'] = relationship('User', back_populates='navigation')
     caution: Mapped[List['Caution']] = relationship('Caution', back_populates='navigation')
     dangerous_incident: Mapped[List['DangerousIncident']] = relationship('DangerousIncident', back_populates='navigation')
     outbreak: Mapped[List['Outbreak']] = relationship('Outbreak', back_populates='navigation')
@@ -153,7 +151,7 @@ class Caution(Base):
     caution_id: Mapped[int] = mapped_column(INTEGER(11), primary_key=True)
     navigation_id: Mapped[int] = mapped_column(INTEGER(11))
     principal_id: Mapped[int] = mapped_column(INTEGER(11))
-    principal_type: Mapped[str] = mapped_column(Enum('USER', 'ROAD_ADMIN'))
+    principal_type: Mapped[str] = mapped_column(Enum('USER','ROAD_ADMIN', 'SERVICE_ADMIN'))
     message: Mapped[str] = mapped_column(String(100))
     loc: Mapped[Point] = mapped_column(Point)
     route_no: Mapped[str] = mapped_column(String(10))
@@ -175,7 +173,7 @@ class DangerousIncident(Base):
     dincident_id: Mapped[int] = mapped_column(INTEGER(11), primary_key=True)
     navigation_id: Mapped[int] = mapped_column(INTEGER(11))
     principal_id: Mapped[int] = mapped_column(INTEGER(11))
-    principal_type: Mapped[str] = mapped_column(Enum('USER', 'ROAD_ADMIN'))
+    principal_type: Mapped[str] = mapped_column(Enum('USER','ROAD_ADMIN', 'SERVICE_ADMIN'))
     loc: Mapped[Point] = mapped_column(Point)
     period: Mapped[str] = mapped_column(String(50))
     created_at: Mapped[datetime.datetime] = mapped_column(DateTime, server_default=text('current_timestamp()'))
@@ -196,7 +194,7 @@ class Outbreak(Base):
     outbreak_id: Mapped[int] = mapped_column(INTEGER(11), primary_key=True)
     navigation_id: Mapped[int] = mapped_column(INTEGER(11))
     principal_id: Mapped[int] = mapped_column(INTEGER(11))
-    principal_type: Mapped[str] = mapped_column(Enum('USER', 'ROAD_ADMIN'))
+    principal_type: Mapped[str] = mapped_column(Enum('USER','ROAD_ADMIN', 'SERVICE_ADMIN'))
     event_type: Mapped[str] = mapped_column(String(10))
     period: Mapped[str] = mapped_column(String(15))
     road_name: Mapped[str] = mapped_column(String(20))
@@ -243,7 +241,7 @@ class Vsl(Base):
     vsl_id: Mapped[int] = mapped_column(INTEGER(11), primary_key=True)
     navigation_id: Mapped[int] = mapped_column(INTEGER(11))
     principal_id: Mapped[int] = mapped_column(INTEGER(11))
-    principal_type: Mapped[str] = mapped_column(Enum('USER', 'ROAD_ADMIN'))
+    principal_type: Mapped[str] = mapped_column(Enum('USER','ROAD_ADMIN', 'SERVICE_ADMIN'))
     vsl_name: Mapped[str] = mapped_column(String(50))
     loc: Mapped[Point] = mapped_column(Point)
     registedDate: Mapped[str] = mapped_column(String(50))

@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends,Query
 # from app.models.traffics import TrafficResponse
-from app.models.default import Model404,Model422
+from app.models.traffic_model.default import Model404,Model422
 from app.services.road_api import find_outbreaks,find_caution_sections,find_dangerous_incident,find_VSL
 from typing import Optional
-from app.models.alert import OutbreakResponse,CautionsResponseModel,DangerousIncidentResponse,VSLResponseModel
+from app.models.traffic_model.alert import OutbreakResponse,CautionsResponseModel,DangerousIncidentResponse,VSLResponseModel
 
 router = APIRouter()
 

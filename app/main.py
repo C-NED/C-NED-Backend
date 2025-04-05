@@ -68,4 +68,4 @@ app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
 # app.include_router(traffics,prefix="/alert",tags=["Alert"])
 # app.include_router(alert,prefix="/alert",tags=["Alert"])
-app.include_router(token,prefix="/auth",tags=["token"])
+app.include_router(token,prefix="/auth",tags=["auth"])

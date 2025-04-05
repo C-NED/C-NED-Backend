@@ -1,7 +1,7 @@
 import requests
 import urllib.parse
 from fastapi import Query
-from app.models.default import Model404,Model422
+from app.models.traffic_model.default import Model404,Model422
 from app.key_collection import ROAD_API_KEY
 from fastapi import APIRouter, Depends,Query
 

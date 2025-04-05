@@ -9,6 +9,9 @@ from model import RefreshToken
 from fastapi import HTTPException, status
 from jose import jwt
 from app.database import get_db
+from app.auth.schemas import RefreshTokenRequest
+import hashlib
+
 
 router = APIRouter()
 
@@ -21,7 +24,11 @@ def login_user(user_id: int, type: str, db: Session = Depends(get_db)):
 # auth/services/routes.py
 
 @router.post("/refresh")
-def refresh_token(refresh_token: str = None, db: Session = Depends(get_db)):
+def refresh_token(request: RefreshTokenRequest, db: Session = Depends(get_db)):
+    refresh_token = request.refresh_token
+    
+    hashed_token = hashlib.sha256(refresh_token.encode('utf-8')).digest()
+    
     if refresh_token:
         # 기존 리프레시 토큰을 갱신
         try:
@@ -38,7 +45,7 @@ def refresh_token(refresh_token: str = None, db: Session = Depends(get_db)):
             raise HTTPException(status_code=400, detail="Invalid token payload")
 
         # DB에서 기존 refresh_token 확인
-        token_in_db = db.query(RefreshToken).filter_by(principal_id=principal_id, refresh_token=refresh_token).first()
+        token_in_db = db.query(RefreshToken).filter_by(principal_id=principal_id, refresh_token=hashed_token).first()
         if not token_in_db:
             raise HTTPException(status_code=401, detail="Invalid refresh token")
 

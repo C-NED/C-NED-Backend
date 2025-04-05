@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends,Query
-from app.models.location import CoLocationResponse,AdLocationResponse
+from app.models.traffic_model.location import CoLocationResponse,AdLocationResponse
 import urllib.parse
-from app.models.default import Model404,Model422
+from app.models.traffic_model.default import Model404,Model422
 from app.services.naver_api import picklocation_co,picklocation_ad
 
 #위치 선택 시 좌표 및 주소 반환

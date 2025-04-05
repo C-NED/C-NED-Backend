@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends,Query
-from app.models.route import RouteResponse
+from app.models.traffic_model.route import RouteResponse
 from app.services.naver_api import get_route
-from app.models.default import Model404,Model422
+from app.models.traffic_model.default import Model404,Model422
 #출발지와 도착지 간의 최적 경로 탐색
 
 

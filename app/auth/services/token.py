@@ -8,6 +8,8 @@ import redis
 from app.key_collection import SECRET_KEY,ALGORITHM,ACCESS_EXPIRE_MINUTES
 import secrets
 from fastapi import HTTPException, status
+import hashlib
+
 
 # Redis 연결
 r = redis.Redis(host='localhost', port=6379, db=0)
@@ -31,19 +33,21 @@ def create_refresh_token(db: Session, p_id: int, p_type: str):
     else:
         expires_in = timedelta(days=15)  # 기본값은 15일
 
-    # 새로운 secret_key 생성 (매번 새로운 키를 사용)
-    secret_key = secrets.token_urlsafe(32)
-
-    token_data = {
+    payload = {
         "principal_id": p_id,
         "principal_type": p_type,
         "exp": datetime.utcnow() + expires_in
     }
-    refresh_token = jwt.encode(token_data, SECRET_KEY, algorithm=ALGORITHM)
-    db_token = RefreshToken(principal_id=p_id,principal_type=p_type,refresh_token=refresh_token, expires_at=datetime.utcnow() + expires_in)
+
+    refresh_token_str = jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
+
+    # BINARY(32)이므로 SHA-256 해시
+    hashed_token = hashlib.sha256(refresh_token_str.encode("utf-8")).digest()
+
+    db_token = RefreshToken(principal_id=p_id,principal_type=p_type,refresh_token=hashed_token, expires_at=datetime.utcnow() + expires_in)
     db.add(db_token)
     db.commit()
-    return refresh_token
+    return hashed_token
 
 
 def manage_refresh_token(db: Session, p_id: int, p_type: str):

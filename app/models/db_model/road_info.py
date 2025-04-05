@@ -1,15 +1,14 @@
+from __future__ import annotations
+
 from typing import Any, List, Optional
 
-from sqlalchemy import BINARY, DateTime, Enum, ForeignKeyConstraint, Index, String, TIMESTAMP, text
-from sqlalchemy.dialects.mysql import INTEGER, TINYINT
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
-from sqlalchemy.sql.sqltypes import NullType
+from sqlalchemy import DateTime, Index, String, text
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 import datetime
-from sqlalchemy.types import UserDefinedType
 from app.models.db_model.base import Base
-from app.models.db_model.caution import Caution
-from app.models.db_model.outbreak import Outbreak
-from app.models.db_model.vsl import Vsl
+# from app.models.db_model.caution import Caution
+# from app.models.db_model.outbreak import Outbreak
+# from app.models.db_model.vsl import Vsl
 
 
 class RoadInfo(Base):

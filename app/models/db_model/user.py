@@ -1,14 +1,17 @@
+from __future__ import annotations
 from typing import Any, List, Optional
-
-from sqlalchemy import BINARY, DateTime, Enum, ForeignKeyConstraint, Index, String, TIMESTAMP, text
+from sqlalchemy import DateTime, Index, String, text
 from sqlalchemy.dialects.mysql import INTEGER, TINYINT
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
-from sqlalchemy.sql.sqltypes import NullType
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 import datetime
-from sqlalchemy.types import UserDefinedType
 from app.models.db_model.base import Base
-from app.models.db_model.point import Point
-from app.models.db_model.favorite_place import FavoritePlace
+# from app.models.db_model.favorite_place import FavoritePlace
+# from app.models.db_model.navigation import Navigation
+# from app.models.db_model.vsl import Vsl
+# from app.models.db_model.caution import Caution
+# from app.models.db_model.dangerous_incident import DangerousIncident
+# from app.models.db_model.outbreak import Outbreak
+from app.auth.relationships import user_navigation_join,user_caution_join,user_dangerous_join,user_outbreak_join,user_vsl_join
 
 
 class User(Base):
@@ -26,4 +29,42 @@ class User(Base):
     updated_at: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime, server_default=text('current_timestamp() ON UPDATE current_timestamp()'))
 
     favorite_place: Mapped[List['FavoritePlace']] = relationship('FavoritePlace', back_populates='user')
-    navigation: Mapped[List['Navigation']] = relationship('Navigation', back_populates='user')
+    # navigation: Mapped[List['Navigation']] = relationship('Navigation', back_populates='user')
+
+    #다형성 fk 정의
+
+    user_navigation_to: Mapped[List['Navigation']] = relationship(
+        'Navigation',
+        primaryjoin=user_navigation_join,
+        back_populates='user_navigation_from',
+        lazy='raise'
+    )
+
+    user_outbreak_to: Mapped[List['Outbreak']] = relationship(
+        'Outbreak',
+        primaryjoin=user_outbreak_join,
+        back_populates='user_outbreak_from',
+        lazy='raise'
+    )
+
+    user_vsl_to: Mapped[List['Vsl']] = relationship(
+        'Vsl',
+        primaryjoin=user_vsl_join,
+        back_populates='user_vsl_from',
+        lazy='raise'
+    )
+
+    user_caution_to: Mapped[List['Caution']] = relationship(
+        'Caution',
+        primaryjoin=user_caution_join,
+        back_populates='user_caution_from',
+        lazy='raise'
+    )
+
+    user_dangerous_incident_to: Mapped[List['DangerousIncident']] = relationship(
+        'DangerousIncident',
+        primaryjoin=user_dangerous_join,
+        back_populates='user_dangerous_incident_from',
+        lazy='raise'
+    )
+

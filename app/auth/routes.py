@@ -12,7 +12,6 @@ from app.database import get_db
 from app.auth.schemas import RefreshTokenRequest
 import hashlib
 
-
 router = APIRouter()
 
 @router.post("/login")
@@ -25,6 +24,7 @@ def login_user(user_id: int, type: str, db: Session = Depends(get_db)):
 
 @router.post("/refresh")
 def refresh_token(request: RefreshTokenRequest, db: Session = Depends(get_db)):
+    
     refresh_token = request.refresh_token
     
     hashed_token = hashlib.sha256(refresh_token.encode('utf-8')).digest()

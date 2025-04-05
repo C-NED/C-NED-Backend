@@ -10,6 +10,35 @@ from app.routes.alert import router as alert
 from fastapi.staticfiles import StaticFiles
 from app.auth.routes import router as token
 
+# # 👇 여기에 모든 모델 import를 명시적으로 추가!
+# from app.models.db_model.user import User
+# from app.models.db_model.navigation import Navigation
+# from app.models.db_model.outbreak import Outbreak
+# from app.models.db_model.vsl import Vsl
+# from app.models.db_model.caution import Caution
+# from app.models.db_model.dangerous_incident import DangerousIncident
+# from app.models.db_model.admin import Admin
+# from app.models.db_model.favorite_place import FavoritePlace
+# from app.models.db_model.refresh_token import RefreshToken
+
+# # 관계만 정의되어 있고, 직접 참조가 없으면 반드시 import 해야 등록됨!
+
+def register_models():
+    # 👇 이 안에서 모든 모델 파일 한 번만 import
+    import app.models.db_model.user
+    import app.models.db_model.navigation
+    import app.models.db_model.admin
+    import app.models.db_model.outbreak
+    import app.models.db_model.vsl
+    import app.models.db_model.caution
+    import app.models.db_model.dangerous_incident
+    import app.models.db_model.favorite_place
+    import app.models.db_model.refresh_token
+    import app.models.db_model.road_info
+    import app.models.db_model.path
+    import app.models.db_model.road_section
+    import app.models.db_model.types.point
+
 app = FastAPI(
     title="🚀Doby API",
     description="""
@@ -69,3 +98,12 @@ app.mount("/static", StaticFiles(directory="app/static"), name="static")
 # app.include_router(traffics,prefix="/alert",tags=["Alert"])
 # app.include_router(alert,prefix="/alert",tags=["Alert"])
 app.include_router(token,prefix="/auth",tags=["auth"])
+
+# 👉 모델 등록 (딱 한 번만!)
+register_models()
+
+from app.models.db_model.base import Base
+
+print("🔍 현재 SQLAlchemy에 등록된 모델 클래스:")
+for mapper in Base.registry.mappers:
+    print(f" - {mapper.class_.__name__}")

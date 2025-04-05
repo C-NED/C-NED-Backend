@@ -1,13 +1,10 @@
 from typing import Any, List, Optional
 
-from sqlalchemy import BINARY, DateTime, Enum, ForeignKeyConstraint, Index, String, TIMESTAMP, text
+from sqlalchemy import BINARY, DateTime, Enum, Index, text
 from sqlalchemy.dialects.mysql import INTEGER, TINYINT
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
-from sqlalchemy.sql.sqltypes import NullType
+from sqlalchemy.orm import Mapped, mapped_column
 import datetime
-from sqlalchemy.types import UserDefinedType
 from app.models.db_model.base import Base
-from app.models.db_model.point import Point
 
 class RefreshToken(Base):
     __tablename__ = 'refresh_token'

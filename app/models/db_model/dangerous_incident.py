@@ -1,14 +1,17 @@
+from __future__ import annotations
+
 from typing import Any, List, Optional
 
-from sqlalchemy import BINARY, DateTime, Enum, ForeignKeyConstraint, Index, String, TIMESTAMP, text
-from sqlalchemy.dialects.mysql import INTEGER, TINYINT
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
-from sqlalchemy.sql.sqltypes import NullType
+from sqlalchemy import DateTime, Enum, ForeignKeyConstraint, Index, String, TIMESTAMP, text
+from sqlalchemy.dialects.mysql import INTEGER
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 import datetime
-from sqlalchemy.types import UserDefinedType
 from app.models.db_model.base import Base
-from app.models.db_model.point import Point
-from app.models.db_model.navigation import Navigation
+from app.models.db_model.types.point import Point
+# from app.models.db_model.navigation import Navigation
+# from app.models.db_model.admin import Admin
+# from app.models.db_model.user import User
+from app.auth.relationships import admin_dangerous_join,user_dangerous_join
 
 class DangerousIncident(Base):
     __tablename__ = 'dangerous_incident'
@@ -27,3 +30,20 @@ class DangerousIncident(Base):
     updated_at: Mapped[datetime.datetime] = mapped_column(TIMESTAMP, server_default=text('current_timestamp() ON UPDATE current_timestamp()'))
 
     navigation: Mapped['Navigation'] = relationship('Navigation', back_populates='dangerous_incident')
+
+    #다형성 fk 정의 
+    user_dangerous_incident_from: Mapped[Optional['User']] = relationship(
+        'User',
+        primaryjoin=user_dangerous_join,
+        back_populates='user_dangerous_incident_to',
+        viewonly=True,
+        lazy='raise'
+    )
+
+    admin_dangerous_incident_from: Mapped[Optional['Admin']] = relationship(
+        'Admin',
+        primaryjoin=admin_dangerous_join,
+        back_populates='admin_dangerous_incident_to',
+        viewonly=True,
+        lazy='raise'
+    )

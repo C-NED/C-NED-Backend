@@ -1,14 +1,18 @@
-from typing import Any, List, Optional
-from sqlalchemy import BINARY, DateTime, Enum, ForeignKeyConstraint, Index, String, TIMESTAMP, text
-from sqlalchemy.dialects.mysql import INTEGER, TINYINT
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
-from sqlalchemy.sql.sqltypes import NullType
+from __future__ import annotations
+
+from typing import Optional
+from sqlalchemy import DateTime, Enum, ForeignKeyConstraint, Index, String, TIMESTAMP, text
+from sqlalchemy.dialects.mysql import INTEGER
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 import datetime
-from sqlalchemy.types import UserDefinedType
 from app.models.db_model.base import Base
-from app.models.db_model.point import Point
-from app.models.db_model.navigation import Navigation
+from app.models.db_model.types.point import Point
+# from app.models.db_model.navigation import Navigation
 from app.models.db_model.road_info import RoadInfo
+# from app.models.db_model.admin import Admin
+# from app.models.db_model.user import User
+from app.auth.relationships import admin_caution_join,user_caution_join
+
 
 class Caution(Base):
     __tablename__ = 'caution'
@@ -32,3 +36,20 @@ class Caution(Base):
 
     navigation: Mapped['Navigation'] = relationship('Navigation', back_populates='caution')
     road_info: Mapped['RoadInfo'] = relationship('RoadInfo', back_populates='caution')
+
+    #다형성 fk 정의 
+    user_caution_from: Mapped[Optional['User']] = relationship(
+        'User',
+        primaryjoin=user_caution_join,
+        back_populates='user_caution_to',
+        viewonly=True,
+        lazy='raise'
+    )
+
+    admin_caution_from: Mapped[Optional['Admin']] = relationship(
+        'Admin',
+        primaryjoin=admin_caution_join,
+        back_populates='admin_caution_to',
+        viewonly=True,
+        lazy='raise'
+    )

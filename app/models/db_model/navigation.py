@@ -1,19 +1,21 @@
+from __future__ import annotations
 from typing import Any, List, Optional
 
-from sqlalchemy import BINARY, DateTime, Enum, ForeignKeyConstraint, Index, String, TIMESTAMP, text
-from sqlalchemy.dialects.mysql import INTEGER, TINYINT
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
-from sqlalchemy.sql.sqltypes import NullType
+from sqlalchemy import DateTime, Enum, Index, text
+from sqlalchemy.dialects.mysql import INTEGER
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 import datetime
-from sqlalchemy.types import UserDefinedType
 from app.models.db_model.base import Base
-from app.models.db_model.point import Point
-from app.models.db_model.caution import Caution
-from app.models.db_model.dangerous_incident import DangerousIncident
-from app.models.db_model.vsl import Vsl
-from app.models.db_model.outbreak import Outbreak
-from app.models.db_model.path import Path
-from app.models.db_model.road_section import RoadSection
+from app.models.db_model.types.point import Point
+# from app.models.db_model.caution import Caution
+# from app.models.db_model.dangerous_incident import DangerousIncident
+# from app.models.db_model.vsl import Vsl
+# from app.models.db_model.outbreak import Outbreak
+# from app.models.db_model.path import Path
+# from app.models.db_model.user import User
+# from app.models.db_model.admin import Admin
+# from app.models.db_model.road_section import RoadSection
+from app.auth.relationships import user_navigation_join,admin_navigation_join
 
 
 class Navigation(Base):
@@ -44,3 +46,21 @@ class Navigation(Base):
     path: Mapped[List['Path']] = relationship('Path', back_populates='navigation')
     vsl: Mapped[List['Vsl']] = relationship('Vsl', back_populates='navigation')
     road_section: Mapped[List['RoadSection']] = relationship('RoadSection', back_populates='navigation')
+
+    #다형성 fk 정의
+    # Navigation 입장에서 관계 정의 (반대 방향)
+    user_navigation_from: Mapped[Optional['User']] = relationship(
+        'User',
+        primaryjoin=user_navigation_join,
+        back_populates='user_navigation_to',
+        viewonly=True,
+        lazy='raise'
+    )
+
+    admin_navigation_from: Mapped[Optional['Admin']] = relationship(
+        'Admin',
+        primaryjoin=admin_navigation_join,
+        back_populates='admin_navigation_to',
+        viewonly=True,
+        lazy='raise'
+    )

@@ -1,14 +1,13 @@
-from typing import Any, List, Optional
+from __future__ import annotations
 
-from sqlalchemy import BINARY, DateTime, Enum, ForeignKeyConstraint, Index, String, TIMESTAMP, text
-from sqlalchemy.dialects.mysql import INTEGER, TINYINT
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
-from sqlalchemy.sql.sqltypes import NullType
+from typing import Optional
+from sqlalchemy import DateTime, ForeignKeyConstraint, Index, String, TIMESTAMP, text
+from sqlalchemy.dialects.mysql import INTEGER
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 import datetime
-from sqlalchemy.types import UserDefinedType
 from app.models.db_model.base import Base
-from app.models.db_model.point import Point
-from app.models.db_model.user import User
+from app.models.db_model.types.point import Point
+# from app.models.db_model.user import User
 
 class FavoritePlace(Base):
     __tablename__ = 'favorite_place'

@@ -1,15 +1,20 @@
-from typing import Any, List, Optional
+from __future__ import annotations
 
-from sqlalchemy import BINARY, DateTime, Enum, ForeignKeyConstraint, Index, String, TIMESTAMP, text
-from sqlalchemy.dialects.mysql import INTEGER, TINYINT
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
-from sqlalchemy.sql.sqltypes import NullType
+from typing import Any, Optional
+
+from sqlalchemy import DateTime, Enum, ForeignKeyConstraint, Index, String, TIMESTAMP, text
+from sqlalchemy.dialects.mysql import INTEGER
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 import datetime
-from sqlalchemy.types import UserDefinedType
 from app.models.db_model.base import Base
-from app.models.db_model.point import Point
-from app.models.db_model.navigation import Navigation
+from app.models.db_model.types.point import Point
+# from app.models.db_model.admin import Admin
+# from app.models.db_model.user import User
+# from app.models.db_model.navigation import Navigation
 from app.models.db_model.road_info import RoadInfo
+from app.auth.relationships import user_vsl_join,admin_vsl_join
+
+
 
 class Vsl(Base):
     __tablename__ = 'vsl'
@@ -36,3 +41,21 @@ class Vsl(Base):
 
     navigation: Mapped['Navigation'] = relationship('Navigation', back_populates='vsl')
     road_info: Mapped['RoadInfo'] = relationship('RoadInfo', back_populates='vsl')
+
+
+     #다형성 fk 정의 
+    user_vsl_from: Mapped[Optional['User']] = relationship(
+        'User',
+        primaryjoin=user_vsl_join,
+        back_populates='user_vsl_to',
+        viewonly=True,
+        lazy='raise'
+    )
+
+    admin_vsl_from: Mapped[Optional['Admin']] = relationship(
+        'Admin',
+        primaryjoin=admin_vsl_join,
+        back_populates='admin_vsl_to',
+        viewonly=True,
+        lazy='raise'
+    )

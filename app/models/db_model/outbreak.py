@@ -1,15 +1,18 @@
-from typing import Any, List, Optional
+from __future__ import annotations
 
-from sqlalchemy import BINARY, DateTime, Enum, ForeignKeyConstraint, Index, String, TIMESTAMP, text
-from sqlalchemy.dialects.mysql import INTEGER, TINYINT
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
-from sqlalchemy.sql.sqltypes import NullType
+from typing import Optional
+
+from sqlalchemy import DateTime, Enum, ForeignKeyConstraint, Index, String, TIMESTAMP, text
+from sqlalchemy.dialects.mysql import INTEGER
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 import datetime
-from sqlalchemy.types import UserDefinedType
 from app.models.db_model.base import Base
-from app.models.db_model.point import Point
-from app.models.db_model.navigation import Navigation
+from app.models.db_model.types.point import Point
+# from app.models.db_model.navigation import Navigation
 from app.models.db_model.road_info import RoadInfo
+# from app.models.db_model.admin import Admin
+# from app.models.db_model.user import User
+from app.auth.relationships import admin_outbreak_join,user_outbreak_join
 
 class Outbreak(Base):
     __tablename__ = 'outbreak'
@@ -35,3 +38,20 @@ class Outbreak(Base):
 
     navigation: Mapped['Navigation'] = relationship('Navigation', back_populates='outbreak')
     road_info: Mapped['RoadInfo'] = relationship('RoadInfo', back_populates='outbreak')
+
+     #다형성 fk 정의 
+    user_outbreak_from: Mapped[Optional['User']] = relationship(
+        'User',
+        primaryjoin=user_outbreak_join,
+        back_populates='user_outbreak_to',
+        viewonly=True,
+        lazy='raise'
+    )
+
+    admin_outbreak_from: Mapped[Optional['Admin']] = relationship(
+        'Admin',
+        primaryjoin=admin_outbreak_join,
+        back_populates='admin_outbreak_to',
+        viewonly=True,
+        lazy='raise'
+    )

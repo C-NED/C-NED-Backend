@@ -15,8 +15,17 @@ import hashlib
 # Redis 연결
 r = redis.Redis(host='localhost', port=6379, db=0)
 
-def create_access_token(data: dict, expires_delta: timedelta = None,secret_key: str = None):
+try:
+    pong = r.ping()
+    print("Redis 연결 성공!" if pong else "Redis 연결 실패!")
+except Exception as e:
+    print("Redis 연결 오류:", e)
 
+
+def create_access_token(data: dict, expires_delta: timedelta = None,secret_key: str = None):
+    if secret_key is None:
+        secret_key = secrets.token_urlsafe(32)
+        
     to_encode = data.copy()
     expire = datetime.utcnow() + (expires_delta or timedelta(minutes=ACCESS_EXPIRE_MINUTES))
     to_encode.update({"exp": expire})

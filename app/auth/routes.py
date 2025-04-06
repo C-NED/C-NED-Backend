@@ -23,31 +23,50 @@ router = APIRouter()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/token")
 
 @router.post("/login")
-def login_user(user_id: int, type: str, db: Session = Depends(get_db)):
-    # 1. 기존 refresh_token 확인 후 access_token만 새로 발급
-    token_in_db = db.query(RefreshToken).filter_by(principal_id=user_id, principal_type=type).first()
+def login_user(email: str, password: str, type: str, db: Session = Depends(get_db)):
+    
+    # 기존 refresh_token 확인 후 access_token만 새로 발급
+    if type == "USER":
+        user = db.query(User).filter_by(email=email, password=password).first()
+        if not user:
+            raise HTTPException(status_code=401, detail="Invalid credentials")
+        principal_id = user.user_id
+    elif type == "ADMIN":
+        admin = db.query(Admin).filter_by(email=email, password=password).first()
+        if not admin:
+            raise HTTPException(status_code=401, detail="Invalid credentials")
+        principal_id = admin.admin_id
+    else:
+        raise HTTPException(status_code=400, detail="Invalid user type")
+
+    # 기존 refresh_token 확인
+    token_in_db = db.query(RefreshToken).filter_by(
+        principal_id=principal_id,
+        principal_type=type
+    ).first()
+
 
     if token_in_db and token_in_db.expires_at > datetime.utcnow():
         # ✅ 유효하면 access_token만 새로 발급
         access_token = create_access_token({
-            "principal_id": user_id,
+            "principal_id": principal_id,
             "principal_type": type,
         })
         return {
             "access_token": access_token,
-            "refresh_token": token_in_db.refresh_token.hex()  # ← bytes → hex로 반환
+            # "refresh_token": token_in_db.refresh_token.hex()  # ← bytes → hex로 반환
         }
 
-    # 2. 만료되었거나 없음 → 새로 발급
-    refresh_token, secret_key = create_refresh_token(db, user_id, type)
+    # 만료되었거나 없음 → 새로 발급
+    refresh_token, secret_key = create_refresh_token(db, principal_id, type)
     access_token = create_access_token({
-        "principal_id": user_id,
+        "principal_id": principal_id,
         "principal_type": type,
     }, secret_key=secret_key)
 
     return {
         "access_token": access_token,
-        "refresh_token": refresh_token
+        # "refresh_token": refresh_token
     }
 
 @router.post("/logout")

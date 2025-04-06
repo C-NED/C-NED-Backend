@@ -39,23 +39,24 @@ class Vsl(Base):
     created_at: Mapped[datetime.datetime] = mapped_column(DateTime, server_default=text('current_timestamp()'))
     updated_at: Mapped[datetime.datetime] = mapped_column(TIMESTAMP, server_default=text('current_timestamp() ON UPDATE current_timestamp()'))
 
-    navigation: Mapped['Navigation'] = relationship('Navigation', back_populates='vsl')
-    road_info: Mapped['RoadInfo'] = relationship('RoadInfo', back_populates='vsl')
+    navigation_vsl_from: Mapped['Navigation'] = relationship('Navigation', back_populates='navigation_vsl_to')
+    road_info_vsl_from: Mapped['RoadInfo'] = relationship('RoadInfo', back_populates='road_info_vsl_to')
 
 
      #다형성 fk 정의 
     user_vsl_from: Mapped[Optional['User']] = relationship(
         'User',
         primaryjoin=user_vsl_join,
-        back_populates='user_vsl_to',
         viewonly=True,
-        lazy='raise'
+        back_populates='user_vsl_to',
+        lazy='raise',
+        overlaps="admin_vsl_from"
     )
 
     admin_vsl_from: Mapped[Optional['Admin']] = relationship(
         'Admin',
         primaryjoin=admin_vsl_join,
-        back_populates='admin_vsl_to',
         viewonly=True,
+        back_populates='admin_vsl_to',
         lazy='raise'
     )

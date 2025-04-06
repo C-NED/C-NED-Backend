@@ -29,7 +29,7 @@ class DangerousIncident(Base):
     created_at: Mapped[datetime.datetime] = mapped_column(DateTime, server_default=text('current_timestamp()'))
     updated_at: Mapped[datetime.datetime] = mapped_column(TIMESTAMP, server_default=text('current_timestamp() ON UPDATE current_timestamp()'))
 
-    navigation: Mapped['Navigation'] = relationship('Navigation', back_populates='dangerous_incident')
+    navigation_dangerous_from: Mapped['Navigation'] = relationship('Navigation', back_populates='navigation_dangerous_to')
 
     #다형성 fk 정의 
     user_dangerous_incident_from: Mapped[Optional['User']] = relationship(
@@ -37,7 +37,8 @@ class DangerousIncident(Base):
         primaryjoin=user_dangerous_join,
         back_populates='user_dangerous_incident_to',
         viewonly=True,
-        lazy='raise'
+        lazy='raise',
+        overlaps="admin_dangerous_incident_from"
     )
 
     admin_dangerous_incident_from: Mapped[Optional['Admin']] = relationship(

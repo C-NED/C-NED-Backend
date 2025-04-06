@@ -107,3 +107,15 @@ from app.models.db_model.base import Base
 print("🔍 현재 SQLAlchemy에 등록된 모델 클래스:")
 for mapper in Base.registry.mappers:
     print(f" - {mapper.class_.__name__}")
+
+from app.models.db_model.base import Base
+
+print("🔍 관계 매핑 확인")
+for mapper in Base.registry.mappers:
+    cls = mapper.class_
+    print(f"[{cls.__name__}] 관계:")
+    for rel in mapper.relationships:
+        print(f" - {rel.key} -> {rel.mapper.class_.__name__}")
+
+
+

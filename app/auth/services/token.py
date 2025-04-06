@@ -1,9 +1,10 @@
 # auth/services/token.py
 
 from datetime import datetime, timedelta
+import json
 from jose import jwt
 from sqlalchemy.orm import Session
-from model import RefreshToken
+from app.models.db_model.refresh_token import RefreshToken
 import redis
 from app.key_collection import SECRET_KEY,ALGORITHM,ACCESS_EXPIRE_MINUTES
 import secrets
@@ -20,8 +21,32 @@ def create_access_token(data: dict, expires_delta: timedelta = None,secret_key: 
     expire = datetime.utcnow() + (expires_delta or timedelta(minutes=ACCESS_EXPIRE_MINUTES))
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, secret_key, algorithm=ALGORITHM)
-    r.setex(encoded_jwt, timedelta(minutes=ACCESS_EXPIRE_MINUTES), data["role"])
+    r.setex(
+        encoded_jwt,
+        timedelta(minutes=ACCESS_EXPIRE_MINUTES),
+        json.dumps({
+            "principal_id": data["principal_id"],
+            "principal_type" : data["principal_type"],
+            "exp" : expire.isoformat()
+        })
+    )    
+    
     return encoded_jwt
+
+def verify_access_token(token: str):
+    role = r.get(token)
+    if not role:
+        raise HTTPException(status_code=401, detail="Access token expired or revoked")
+    return role.decode()
+
+def is_blacklisted(token: str):
+    return r.exists(f"blacklist:{token}")
+
+def blacklist_token(token: str):
+    ttl = r.ttl(token)
+    if ttl > 0:
+        r.setex(f"blacklist:{token}", ttl, "true")
+
 
 def create_refresh_token(db: Session, p_id: int, p_type: str):
 
@@ -47,7 +72,7 @@ def create_refresh_token(db: Session, p_id: int, p_type: str):
     db_token = RefreshToken(principal_id=p_id,principal_type=p_type,refresh_token=hashed_token, expires_at=datetime.utcnow() + expires_in)
     db.add(db_token)
     db.commit()
-    return hashed_token
+    return refresh_token_str, hashed_token
 
 
 def manage_refresh_token(db: Session, p_id: int, p_type: str):

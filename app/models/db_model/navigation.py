@@ -40,12 +40,12 @@ class Navigation(Base):
     created_at: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime, server_default=text('current_timestamp()'))
     updated_at: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime, server_default=text('current_timestamp() ON UPDATE current_timestamp()'))
 
-    caution: Mapped[List['Caution']] = relationship('Caution', back_populates='navigation')
-    dangerous_incident: Mapped[List['DangerousIncident']] = relationship('DangerousIncident', back_populates='navigation')
-    outbreak: Mapped[List['Outbreak']] = relationship('Outbreak', back_populates='navigation')
-    path: Mapped[List['Path']] = relationship('Path', back_populates='navigation')
-    vsl: Mapped[List['Vsl']] = relationship('Vsl', back_populates='navigation')
-    road_section: Mapped[List['RoadSection']] = relationship('RoadSection', back_populates='navigation')
+    navigation_caution_to : Mapped[List['Caution']] = relationship('Caution', back_populates='navigation_caution_from')
+    navigation_dangerous_to: Mapped[List['DangerousIncident']] = relationship('DangerousIncident', back_populates='navigation_dangerous_from')
+    navigation_outbreak_to: Mapped[List['Outbreak']] = relationship('Outbreak', back_populates='navigation_outbreak_from')
+    navigation_path_to: Mapped[List['Path']] = relationship('Path', back_populates='navigation_path_from')
+    navigation_vsl_to: Mapped[List['Vsl']] = relationship('Vsl', back_populates='navigation_vsl_from')
+    navigation_road_section_to: Mapped[List['RoadSection']] = relationship('RoadSection', back_populates='navigation_road_section_from')
 
     #다형성 fk 정의
     # Navigation 입장에서 관계 정의 (반대 방향)
@@ -54,7 +54,8 @@ class Navigation(Base):
         primaryjoin=user_navigation_join,
         back_populates='user_navigation_to',
         viewonly=True,
-        lazy='raise'
+        lazy='raise',
+        overlaps="admin_navigation_from"
     )
 
     admin_navigation_from: Mapped[Optional['Admin']] = relationship(

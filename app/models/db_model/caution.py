@@ -34,8 +34,8 @@ class Caution(Base):
     created_at: Mapped[datetime.datetime] = mapped_column(DateTime, server_default=text('current_timestamp()'))
     updated_at: Mapped[datetime.datetime] = mapped_column(TIMESTAMP, server_default=text('current_timestamp() ON UPDATE current_timestamp()'))
 
-    navigation: Mapped['Navigation'] = relationship('Navigation', back_populates='caution')
-    road_info: Mapped['RoadInfo'] = relationship('RoadInfo', back_populates='caution')
+    navigation_caution_from: Mapped['Navigation'] = relationship('Navigation', back_populates='navigation_caution_to')
+    road_info_caution_from: Mapped['RoadInfo'] = relationship('RoadInfo', back_populates='road_info_caution_to')
 
     #다형성 fk 정의 
     user_caution_from: Mapped[Optional['User']] = relationship(
@@ -43,7 +43,8 @@ class Caution(Base):
         primaryjoin=user_caution_join,
         back_populates='user_caution_to',
         viewonly=True,
-        lazy='raise'
+        lazy='raise',
+        overlaps="admin_caution_from"
     )
 
     admin_caution_from: Mapped[Optional['Admin']] = relationship(

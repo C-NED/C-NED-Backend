@@ -23,6 +23,6 @@ class RoadInfo(Base):
     created_at: Mapped[datetime.datetime] = mapped_column(DateTime, server_default=text('current_timestamp()'))
     updated_at: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime, server_default=text('current_timestamp() ON UPDATE current_timestamp()'))
 
-    caution: Mapped[List['Caution']] = relationship('Caution', back_populates='road_info')
-    outbreak: Mapped[List['Outbreak']] = relationship('Outbreak', back_populates='road_info')
-    vsl: Mapped[List['Vsl']] = relationship('Vsl', back_populates='road_info')
+    road_info_caution_to: Mapped[List['Caution']] = relationship('Caution', back_populates='road_info_caution_from')
+    road_info_outbreak_to: Mapped[List['Outbreak']] = relationship('Outbreak', back_populates='road_info_outbreak_from')
+    road_info_vsl_to: Mapped[List['Vsl']] = relationship('Vsl', back_populates='road_info_vsl_from')

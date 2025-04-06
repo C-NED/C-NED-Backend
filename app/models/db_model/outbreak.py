@@ -36,8 +36,8 @@ class Outbreak(Base):
     created_at: Mapped[datetime.datetime] = mapped_column(DateTime, server_default=text('current_timestamp()'))
     updated_at: Mapped[datetime.datetime] = mapped_column(TIMESTAMP, server_default=text('current_timestamp() ON UPDATE current_timestamp()'))
 
-    navigation: Mapped['Navigation'] = relationship('Navigation', back_populates='outbreak')
-    road_info: Mapped['RoadInfo'] = relationship('RoadInfo', back_populates='outbreak')
+    navigation_outbreak_from: Mapped['Navigation'] = relationship('Navigation', back_populates='navigation_outbreak_to')
+    road_info_outbreak_from: Mapped['RoadInfo'] = relationship('RoadInfo', back_populates='road_info_outbreak_to')
 
      #다형성 fk 정의 
     user_outbreak_from: Mapped[Optional['User']] = relationship(
@@ -45,7 +45,8 @@ class Outbreak(Base):
         primaryjoin=user_outbreak_join,
         back_populates='user_outbreak_to',
         viewonly=True,
-        lazy='raise'
+        lazy='raise',
+        overlaps="admin_outbreak_from"
     )
 
     admin_outbreak_from: Mapped[Optional['Admin']] = relationship(

@@ -25,4 +25,4 @@ class FavoritePlace(Base):
     created_at: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime, server_default=text('current_timestamp()'))
     updated_at: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime, server_default=text('current_timestamp() ON UPDATE current_timestamp()'))
 
-    user: Mapped['User'] = relationship('User', back_populates='favorite_place')
+    user_favorite_place_from: Mapped['User'] = relationship('User', back_populates='user_favorite_place_to')

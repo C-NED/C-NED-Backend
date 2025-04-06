@@ -7,7 +7,7 @@ from sqlalchemy.dialects.mysql import INTEGER
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 import datetime
 from app.models.db_model.base import Base
-from app.auth.relationships import admin_navigation_join,admin_caution_join,admin_dangerous_join,admin_outbreak_join,admin_vsl_join
+from app.auth.relationships import admin_navigation_join,admin_caution_join,admin_dangerous_join,admin_outbreak_join,admin_vsl_join,admin_refresh_join
 # from app.models.db_model.navigation import Navigation
 # from app.models.db_model.outbreak import Outbreak
 # from app.models.db_model.vsl import Vsl
@@ -36,28 +36,32 @@ class Admin(Base):
     'Navigation',
     primaryjoin=admin_navigation_join,
     back_populates='admin_navigation_from',
-    lazy='raise'
+    viewonly=True,
+    lazy='select'
     )
 
     admin_outbreak_to: Mapped[List['Outbreak']] = relationship(
     'Outbreak',
     primaryjoin=admin_outbreak_join,
     back_populates='admin_outbreak_from',
-    lazy='raise'
+    viewonly=True,
+    lazy='select'
     )
 
     admin_vsl_to: Mapped[List['Vsl']] = relationship(
     'Vsl',
     primaryjoin=admin_vsl_join,
     back_populates='admin_vsl_from',
-    lazy='raise'
+    viewonly=True,
+    lazy='select'
     )
 
     admin_caution_to: Mapped[List['Caution']] = relationship(
     'Caution',
     primaryjoin=admin_caution_join,
     back_populates='admin_caution_from',
-    lazy='raise'
+    viewonly=True,
+    lazy='select'
     )
 
     #dangerous_incident의 경우 list지만, 네이밍 일관성(편의)를 위해 단수형으로 표기함
@@ -65,5 +69,14 @@ class Admin(Base):
     'DangerousIncident',
     primaryjoin=admin_dangerous_join,
     back_populates='admin_dangerous_incident_from',
-    lazy='raise'
+    viewonly=True,
+    lazy='select'
+    )
+
+    admin_refresh_to: Mapped[List['RefreshToken']] = relationship(
+    'RefreshToken',
+    primaryjoin=admin_refresh_join,
+    back_populates='admin_refresh_from',
+    viewonly=True,
+    lazy='select'
     )

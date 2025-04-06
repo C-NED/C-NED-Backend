@@ -9,7 +9,7 @@ import datetime
 from app.models.db_model.base import Base
 from app.models.db_model.types.point import Point
 # from app.models.db_model.navigation import Navigation
-from app.models.db_model.road_section import RoadSection
+# from app.models.db_model.road_section import RoadSection
 
 
 class Path(Base):
@@ -29,5 +29,5 @@ class Path(Base):
     created_at: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime, server_default=text('current_timestamp()'))
     updated_at: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime, server_default=text('current_timestamp() ON UPDATE current_timestamp()'))
 
-    navigation: Mapped['Navigation'] = relationship('Navigation', back_populates='path')
-    road_section: Mapped[List['RoadSection']] = relationship('RoadSection', back_populates='path')
+    navigation_path_from: Mapped['Navigation'] = relationship('Navigation', back_populates='navigation_path_to')
+    road_section_path_to: Mapped[List['RoadSection']] = relationship('RoadSection', back_populates='road_section_path_from')

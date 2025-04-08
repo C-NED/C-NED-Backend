@@ -8,11 +8,8 @@ from app.models.db_model.types.point import Point
 from shapely.geometry import Point as ShapelyPoint
 
 
-def save_navigation(db: Session, data: dict, principal_type: str, principal_id: int) -> Navigation:
-    if(data):
-        print("data exist")
+def save_navigation(db: Session ,summary:list,option:str,principal_type: str, principal_id: int) -> Navigation:
 
-    summary = data["trafast"][0]['summary']
     start = summary['start']['location']
     goal = summary['goal']['location']
 
@@ -25,7 +22,7 @@ def save_navigation(db: Session, data: dict, principal_type: str, principal_id: 
         start_loc=start_shapely,
         end_loc=end_shapely,
         arrival_time=datetime.fromisoformat(summary['departureTime']) + timedelta(milliseconds=summary['duration']),
-        road_option='trafast',
+        road_option=f'{option}',
         total_distance=summary['distance'],
         total_time=summary['duration'],
         fuelprice=summary['fuelPrice'],

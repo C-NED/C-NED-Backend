@@ -35,12 +35,12 @@ def create_navigation_auto(payload: RouteGuideInput, db: Session = Depends(get_d
     data = get_route(payload.start,payload.goal,payload.road_option)
     
     # 2. Navigation 저장
-    navigation = save_navigation(db, data, principal_type='USER', principal_id=1)
+    navigation = save_navigation(db, data[f"{payload.road_option}"][0]['summary'],payload.road_option, principal_type='USER', principal_id=1)
 
     # 3. Path + Section 저장
-    save_paths(db, data['trafast'][0]['path'], navigation.navigation_id)
-    save_road_sections(db, data['trafast'][0]['section'], navigation.navigation_id)
-    save_guide(db, data['trafast'][0]['guide'], navigation.navigation_id)
+    save_paths(db, data[f"{payload.road_option}"][0]['path'], navigation.navigation_id)
+    save_road_sections(db, data[f"{payload.road_option}"][0]['section'], navigation.navigation_id)
+    save_guide(db, data[f"{payload.road_option}"][0]['guide'], navigation.navigation_id)
 
     db.commit()
     return {"navigation_id": navigation.navigation_id}

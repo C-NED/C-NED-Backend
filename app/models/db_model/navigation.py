@@ -65,3 +65,8 @@ class Navigation(Base):
         viewonly=True,
         lazy='raise'
     )
+
+    navigation_guide_to: Mapped[List["Guide"]] = relationship(
+    "Guide", back_populates="navigation_guide_from"
+    )
+

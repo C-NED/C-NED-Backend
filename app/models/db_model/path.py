@@ -23,11 +23,9 @@ class Path(Base):
     path_id: Mapped[int] = mapped_column(INTEGER(11), primary_key=True)
     navigation_id: Mapped[int] = mapped_column(INTEGER(11))
     path_loc: Mapped[Point] = mapped_column(Point)
-    distance: Mapped[int] = mapped_column(INTEGER(11))
-    duration: Mapped[int] = mapped_column(INTEGER(11), comment='단위: ms (밀리초)')
+    pathidx: Mapped[INTEGER] = mapped_column(INTEGER)
     step_order: Mapped[int] = mapped_column(INTEGER(11))
     created_at: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime, server_default=text('current_timestamp()'))
     updated_at: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime, server_default=text('current_timestamp() ON UPDATE current_timestamp()'))
 
     navigation_path_from: Mapped['Navigation'] = relationship('Navigation', back_populates='navigation_path_to')
-    road_section_path_to: Mapped[List['RoadSection']] = relationship('RoadSection', back_populates='road_section_path_from')

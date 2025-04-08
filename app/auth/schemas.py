@@ -14,7 +14,6 @@ class model401(BaseModel):
 class ErrorContext(BaseModel):
     error: str
 
-
 class ErrorDetail(BaseModel):
     type: str
     loc: List[Union[str, int]]
@@ -30,3 +29,13 @@ class model422(BaseModel):
 class RefreshtokenResponse(BaseModel):
     detail: str
 
+class LoginResponse(BaseModel):
+    access_token : str
+
+class Login422ErrorDetail(BaseModel):
+    loc: List[Union[str, int]]
+    msg: str
+    type: str
+
+class Login422ErrorResponse(BaseModel):
+    detail: List[Login422ErrorDetail]

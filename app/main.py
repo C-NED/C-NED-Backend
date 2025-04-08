@@ -38,6 +38,7 @@ def register_models():
     import app.models.db_model.path
     import app.models.db_model.road_section
     import app.models.db_model.types.point
+    import app.models.db_model.guide
 
 app = FastAPI(
     title="🚀Doby API",
@@ -90,7 +91,7 @@ async def root():
 
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
-# app.include_router(navigation,prefix="/navigation",tags=["navigation"])
+app.include_router(navigation,prefix="/navigation",tags=["navigation"])
 # app.include_router(location,prefix="/navigation",tags=["navigation"])
 # app.include_router(search,prefix="/navigation",tags=["navigation"])
 # app.include_router(gps,prefix="/navigation",tags=["navigation"])

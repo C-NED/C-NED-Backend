@@ -10,7 +10,7 @@ from app.models.db_model.refresh_token import RefreshToken
 from fastapi import HTTPException, status
 from jose import JWTError, jwt
 from app.database import get_db
-from app.auth.schemas import RefreshTokenRequest,RefreshtokenResponse,model401,model404,model422
+from app.auth.schemas import Login422ErrorResponse, LoginResponse, RefreshTokenRequest,RefreshtokenResponse,model401,model404,model422
 from app.auth.services.auth_type import get_auth_type
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from app.auth.services.token import r
@@ -22,19 +22,56 @@ router = APIRouter()
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/token")
 
-@router.post("/login")
+@router.post("/login",
+        response_model=LoginResponse,
+        responses={
+        401: {
+            "model": model401,
+            "description": "인증 실패",
+            "content": {
+                "application/json": {
+                    "example": {"detail": "Invalid credentials"}
+                }
+            }
+        },
+        422:{
+            "model":Login422ErrorResponse,
+            "description":"필드 형식 에러",
+            "content": {
+                "application/json": {
+                    "example": {
+                    "detail": [
+                        {
+                            "loc": ["query", "email"],
+                            "msg": "field required",
+                            "type": "value_error.missing"
+                        }
+                    ]
+                }
+                }
+            }
+        }
+    })
 def login_user(email: str, password: str, type: str, db: Session = Depends(get_db)):
     
     # 기존 refresh_token 확인 후 access_token만 새로 발급
     if type == "USER":
         user = db.query(User).filter_by(email=email, password=password).first()
+       
+        #일단 테스트값의 경우 해시가 아닌 문자열으로 저장하였으므로 나중에 다 해시로 바꾸고 아래 코드로 바꿀 것       
+        # 저장된 password는 SHA-256 해시값
+        #바꾸고 아래 코드 활성화 완료!
+        #편의상 개발 중에는 그냥 위의 코드로 사용하고 나중에는 아래 코드로 바꿀 것(해시를 한 번 더하면 달라져서 어쩔 수 없음)
+        # hashed_input = hashlib.sha256(password.encode()).hexdigest()
+        # user = db.query(User).filter_by(email=email, password=hashed_input).first()
+
         if not user:
-            raise HTTPException(status_code=401, detail="Invalid credentials")
+            raise HTTPException(status_code=401, detail="Invalid credentials, user not exist")
         principal_id = user.user_id
     elif type == "ADMIN":
         admin = db.query(Admin).filter_by(email=email, password=password).first()
         if not admin:
-            raise HTTPException(status_code=401, detail="Invalid credentials")
+            raise HTTPException(status_code=401, detail="Invalid credentials, admin not exist")
         principal_id = admin.admin_id
     else:
         raise HTTPException(status_code=400, detail="Invalid user type")
@@ -70,11 +107,15 @@ def login_user(email: str, password: str, type: str, db: Session = Depends(get_d
     }
 
 @router.post("/logout")
+# TODO: response_model 추가 / 401, 422 응답 정의
+
 def logout(token: str = Depends(oauth2_scheme)):
     r.delete(token)
     return {"message": "Logout successful"}
 
 @router.get("/access_token/status")
+# TODO: response_model 추가 / 401, 422 응답 정의
+
 def token_status(token: str = Depends(oauth2_scheme)):
     ttl = r.ttl(token)
     if ttl == -2:
@@ -121,6 +162,8 @@ def token_status(token: str = Depends(oauth2_scheme)):
     
 
 @router.get("/refresh_token/return_type_info", summary="리프레시 토큰으로 사용자 정보 조회")
+# TODO: response_model 추가 / 401, 422 응답 정의
+
 def get_user_from_refresh_token(
     token: str = Depends(oauth2_scheme),
     db: Session = Depends(get_db)
@@ -164,6 +207,7 @@ def get_user_from_refresh_token(
     
 
 @router.post("/token")
+#이건 나중에 fast api 문서에서 안 보이게 할 것
 def issue_token(form_data: OAuth2PasswordRequestForm = Depends()):
     refresh_token = form_data.username  # 사용자가 여기에 refresh_token 넣는다고 가정
     return {
@@ -173,6 +217,8 @@ def issue_token(form_data: OAuth2PasswordRequestForm = Depends()):
 
 
 @router.post("/access_token/verify")
+# TODO: response_model 추가 / 401, 422 응답 정의
+
 def verify_access_token(token: str = Depends(oauth2_scheme)):
     role = verify_access_token(token)
     return {"message": f"Hello, {role}"}

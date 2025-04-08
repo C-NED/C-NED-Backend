@@ -8,7 +8,7 @@ from app.models.traffic_model.gps import LocationRequest
 
 NAVER_ROUTE_API_URL = "https://naveropenapi.apigw.ntruss.com/map-direction/v1/driving"
 
-def get_route(start_lat: float, start_lng: float, end_lat: float, end_lng: float, option: str):
+def get_route(start: list[float,float], goal: list[float,float], road_option: str):
     headers = {
         "X-NCP-APIGW-API-KEY-ID": NAVERCLOUD_CLIENT_ID,
         "X-NCP-APIGW-API-KEY": NAVERCLOUD_CLIENT_SECRET,
@@ -16,9 +16,9 @@ def get_route(start_lat: float, start_lng: float, end_lat: float, end_lng: float
     }
     
     params = {
-        "start": f"{start_lat},{start_lng}",
-        "goal": f"{end_lat},{end_lng}",
-        "option": f"{option}"
+        "start": f"{start[0]},{start[1]}",
+        "goal": f"{goal[0]},{goal[1]}",
+        "option": f"{road_option}"
     }
     
     # option에 trafast,tracomfort,traoptimal,traviodtoll,traavoidcaronly 중 하나 선택

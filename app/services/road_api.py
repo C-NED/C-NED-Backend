@@ -84,25 +84,25 @@ def find_outbreaks(type, eventType, minX, minY, maxX, maxY):
             "status_msg": response.text
         }
 
-def find_caution_sections(minX, maxX, minY, maxY):
+def find_caution_sections(start_loc:list,end_loc:list):
     headers = {
         "User-Agent": "Mozilla/5.0"
     }
 
     params = {
         "apiKey": ROAD_API_KEY,
-        "minX": f"{minX}",
-        "maxX": f"{maxX}",
-        "minY": f"{minY}",
-        "maxY": f"{maxY}",
+        "minX": f"{start_loc[0]}",
+        "maxX": f"{end_loc[0]}",
+        "minY": f"{start_loc[1]}",
+        "maxY": f"{end_loc[1]}",
         "getType": "json"
     }
 
     response = requests.get("https://openapi.its.go.kr:9443/posIncidentInfo", headers=headers, params=params)
 
-    print("요청 URL:", response.url)
-    print("상태 코드:", response.status_code)
-    print("응답:", response.text)
+    # print("요청 URL:", response.url)
+    # print("상태 코드:", response.status_code)
+    # print("응답:", response.text)
 
     if response.status_code == 200:
         data = response.json()

@@ -97,8 +97,8 @@ app.include_router(navigation,prefix="/navigation",tags=["navigation"])
 # app.include_router(gps,prefix="/navigation",tags=["navigation"])
 
 # app.include_router(traffics,prefix="/alert",tags=["Alert"])
-# app.include_router(alert,prefix="/alert",tags=["Alert"])
-app.include_router(token,prefix="/auth",tags=["auth"])
+app.include_router(alert,prefix="/alert",tags=["Alert"])
+# app.include_router(token,prefix="/auth",tags=["auth"])
 
 # 👉 모델 등록 (딱 한 번만!)
 register_models()

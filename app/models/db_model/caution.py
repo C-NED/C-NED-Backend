@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 from typing import Optional
+from geoalchemy2 import Geometry
+from shapely.geometry import LineString
 from sqlalchemy import DateTime, Enum, ForeignKeyConstraint, Index, String, TIMESTAMP, text
 from sqlalchemy.dialects.mysql import INTEGER
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -8,7 +10,7 @@ import datetime
 from app.models.db_model.base import Base
 from app.models.db_model.types.point import Point
 # from app.models.db_model.navigation import Navigation
-from app.models.db_model.road_info import RoadInfo
+# from app.models.db_model.road_info import RoadInfo
 # from app.models.db_model.admin import Admin
 # from app.models.db_model.user import User
 from app.auth.relationships import admin_caution_join,user_caution_join
@@ -28,7 +30,8 @@ class Caution(Base):
     principal_id: Mapped[int] = mapped_column(INTEGER(11))
     principal_type: Mapped[str] = mapped_column(Enum('USER','ROAD_ADMIN', 'SERVICE_ADMIN'))
     message: Mapped[str] = mapped_column(String(100))
-    loc: Mapped[Point] = mapped_column(Point)
+    # LineString을 Geometry 컬럼으로 저장
+    loc: Mapped[LineString] = mapped_column(Geometry("LINESTRING"))   
     route_no: Mapped[str] = mapped_column(String(10))
     route_name: Mapped[str] = mapped_column(String(10))
     created_at: Mapped[datetime.datetime] = mapped_column(DateTime, server_default=text('current_timestamp()'))

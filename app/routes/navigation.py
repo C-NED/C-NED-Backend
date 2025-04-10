@@ -8,6 +8,9 @@ from app.repository.navigation import save_navigation
 from app.repository.path import save_paths
 from app.repository.road_section import save_road_sections
 from app.repository.guide import save_guide
+from app.models.traffic_model.alert import CautionInput
+from app.repository.caution import save_caution
+from app.services.road_api import find_caution_sections
 
 #출발지와 도착지 간의 최적 경로 탐색
 
@@ -28,6 +31,22 @@ def make_route_guide(start: str = Query(default={127.14539383300,37.47309983},de
                      ):
     return get_route(start,goal,road_option)
 
+def create_caution_auto(navigation_id :str, start:list ,goal:list,ptype:str,pid:int,db: Session = Depends(get_db)):
+    # 1. Naver API 호출 (find_caution 로직)
+    data = find_caution_sections(start,goal)
+    
+    # 2. Navigation 저장
+        # data["items"]가 리스트 형태인지 확인
+    if isinstance(data["items"], list):
+        # caution 저장
+        caution = save_caution(db, data["items"], navigation_id, ptype, pid)
+    else:
+        raise ValueError("data['items'] should be a list but got {}".format(type(data["items"])))
+
+
+    db.commit()
+    return {"saved_cautions_count": len(caution)}
+
 
 @router.post("/create")
 def create_navigation_auto(payload: RouteGuideInput, db: Session = Depends(get_db)):
@@ -42,5 +61,8 @@ def create_navigation_auto(payload: RouteGuideInput, db: Session = Depends(get_d
     save_road_sections(db, data[f"{payload.road_option}"][0]['section'], navigation.navigation_id)
     save_guide(db, data[f"{payload.road_option}"][0]['guide'], navigation.navigation_id)
 
+    # 4. caution 저장
+    caution = create_caution_auto(db,navigation.navigation_id,list(payload.start),list(payload.goal),navigation.principal_type,navigation.principal_id)
+
     db.commit()
-    return {"navigation_id": navigation.navigation_id}
+    return {"navigation_id": navigation.navigation_id, "saved_cautions_count": caution["saved_cautions_count"]}

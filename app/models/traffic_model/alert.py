@@ -1,6 +1,6 @@
 from datetime import date
 from pydantic import BaseModel
-from typing import List, Optional
+from typing import List, Optional, Tuple
 
 class OutbreakItem(BaseModel):
     type: str
@@ -91,3 +91,7 @@ class TrafficItem(BaseModel):
 class TrafficResponse(BaseModel):
     totalCount: int
     items: List[TrafficItem]
+
+class CautionInput(BaseModel):
+    start_loc: Tuple[float, float]
+    end_loc: Tuple[float, float]

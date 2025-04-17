@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends,Query
 from requests import Session
 from app.models.traffic_model.route import RouteGuideInput, RouteResponse
+from app.repository.dangerous_incident import save_dincident
 from app.services.naver_api import get_route
 from app.models.traffic_model.default import Model404,Model422
 from app.database import get_db
@@ -10,7 +11,7 @@ from app.repository.road_section import save_road_sections
 from app.repository.guide import save_guide
 from app.models.traffic_model.alert import CautionInput
 from app.repository.caution import save_caution
-from app.services.road_api import find_caution_sections
+from app.services.road_api import find_caution_sections, find_dangerous_incident
 
 #출발지와 도착지 간의 최적 경로 탐색
 
@@ -32,7 +33,7 @@ def make_route_guide(start: str = Query(default={127.14539383300,37.47309983},de
     return get_route(start,goal,road_option)
 
 def create_caution_auto(navigation_id :str, start:list ,goal:list,ptype:str,pid:int,db: Session = Depends(get_db)):
-    # 1. Naver API 호출 (find_caution 로직)
+    # 1. Road API 호출 (find_caution 로직)
     data = find_caution_sections(start,goal)
     
     # 2. Navigation 저장
@@ -47,6 +48,13 @@ def create_caution_auto(navigation_id :str, start:list ,goal:list,ptype:str,pid:
     db.commit()
     return {"saved_cautions_count": len(caution)}
 
+def create_dincident_auto(navigation_id:str,ptype:str,pid:int,db: Session = Depends(get_db)):
+    # 1. Road API 호출 (find_dincident 로직)
+    data = find_dangerous_incident()
+    dincident = save_dincident(db, data["items"], navigation_id, ptype, pid)
+    
+    db.commit()
+    return {"saved_dincidents_count": len(dincident)}
 
 @router.post("/create")
 def create_navigation_auto(payload: RouteGuideInput, db: Session = Depends(get_db)):
@@ -56,13 +64,29 @@ def create_navigation_auto(payload: RouteGuideInput, db: Session = Depends(get_d
     # 2. Navigation 저장
     navigation = save_navigation(db, data[f"{payload.road_option}"][0]['summary'],payload.road_option, principal_type='USER', principal_id=1)
 
-    # 3. Path + Section 저장
-    save_paths(db, data[f"{payload.road_option}"][0]['path'], navigation.navigation_id)
-    save_road_sections(db, data[f"{payload.road_option}"][0]['section'], navigation.navigation_id)
-    save_guide(db, data[f"{payload.road_option}"][0]['guide'], navigation.navigation_id)
+    # # 3. Path + Section 저장
+    # save_paths(db, data[f"{payload.road_option}"][0]['path'], navigation.navigation_id)
+    # save_road_sections(db, data[f"{payload.road_option}"][0]['section'], navigation.navigation_id)
+    # save_guide(db, data[f"{payload.road_option}"][0]['guide'], navigation.navigation_id)
 
-    # 4. caution 저장
-    caution = create_caution_auto(db,navigation.navigation_id,list(payload.start),list(payload.goal),navigation.principal_type,navigation.principal_id)
+    # # 4. caution 저장
+    # caution = create_caution_auto(
+    #     navigation_id=navigation.navigation_id,
+    #     start=list(payload.start),
+    #     goal=list(payload.goal),
+    #     ptype=navigation.principal_type,
+    #     pid=navigation.principal_id,
+    #     db=db
+    # )
+
+    # 5. dincident 저장
+    dincident = create_dincident_auto(
+        navigation_id=navigation.navigation_id,
+        ptype=navigation.principal_type,
+        pid=navigation.principal_id,
+        db=db
+    )
 
     db.commit()
-    return {"navigation_id": navigation.navigation_id, "saved_cautions_count": caution["saved_cautions_count"]}
+    # return {"navigation_id": navigation.navigation_id, "saved_cautions_count": caution["saved_cautions_count"] , "saved_dincidents_count": dincident["saved_dincidents_count"]}
+    return {"navigation_id": navigation.navigation_id, "saved_dincidents_count": dincident["saved_dincidents_count"]}

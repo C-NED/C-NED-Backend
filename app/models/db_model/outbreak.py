@@ -9,10 +9,10 @@ import datetime
 from app.models.db_model.base import Base
 from app.models.db_model.types.point import Point
 # from app.models.db_model.navigation import Navigation
-from app.models.db_model.road_info import RoadInfo
+# from app.models.db_model.road_info import RoadInfo
 # from app.models.db_model.admin import Admin
 # from app.models.db_model.user import User
-from app.auth.relationships import admin_outbreak_join,user_outbreak_join
+from app.auth.relationships import admin_outbreak_join,user_outbreak_join,roadinfo_outbreak_join
 
 class Outbreak(Base):
     __tablename__ = 'outbreak'
@@ -37,7 +37,7 @@ class Outbreak(Base):
     updated_at: Mapped[datetime.datetime] = mapped_column(TIMESTAMP, server_default=text('current_timestamp() ON UPDATE current_timestamp()'))
 
     navigation_outbreak_from: Mapped['Navigation'] = relationship('Navigation', back_populates='navigation_outbreak_to')
-    road_info_outbreak_from: Mapped['RoadInfo'] = relationship('RoadInfo', back_populates='road_info_outbreak_to')
+    # road_info_outbreak_from: Mapped['RoadInfo'] = relationship('RoadInfo', back_populates='road_info_outbreak_to')
 
      #다형성 fk 정의 
     user_outbreak_from: Mapped[Optional['User']] = relationship(
@@ -53,6 +53,14 @@ class Outbreak(Base):
         'Admin',
         primaryjoin=admin_outbreak_join,
         back_populates='admin_outbreak_to',
+        viewonly=True,
+        lazy='raise'
+    )
+
+    roadinfo_outbreak_from: Mapped[Optional['RoadInfo']] = relationship(
+        'RoadInfo',
+        primaryjoin=roadinfo_outbreak_join,
+        back_populates='roadinfo_outbreak_to',
         viewonly=True,
         lazy='raise'
     )

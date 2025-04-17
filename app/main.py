@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Path, Query
+from inflect import engine
 import requests
 from fastapi.responses import RedirectResponse
 from app.routes.navigation import router as navigation
@@ -9,6 +10,11 @@ from app.routes.traffics import router as traffics
 from app.routes.alert import router as alert
 from fastapi.staticfiles import StaticFiles
 from app.auth.routes import router as token
+from app.models.db_model.base import Base
+
+from sqlalchemy.orm import relationship
+from app.models.db_model.road_info import RoadInfo
+from app.models.db_model.caution import Caution
 
 # # 👇 여기에 모든 모델 import를 명시적으로 추가!
 # from app.models.db_model.user import User
@@ -39,6 +45,10 @@ def register_models():
     import app.models.db_model.road_section
     import app.models.db_model.types.point
     import app.models.db_model.guide
+
+# 👉 모델 등록 (딱 한 번만!)
+register_models()
+# Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
     title="🚀Doby API",
@@ -100,16 +110,11 @@ app.include_router(navigation,prefix="/navigation",tags=["navigation"])
 app.include_router(alert,prefix="/alert",tags=["Alert"])
 # app.include_router(token,prefix="/auth",tags=["auth"])
 
-# 👉 모델 등록 (딱 한 번만!)
-register_models()
-
 from app.models.db_model.base import Base
 
 # print("🔍 현재 SQLAlchemy에 등록된 모델 클래스:")
 # for mapper in Base.registry.mappers:
 #     print(f" - {mapper.class_.__name__}")
-
-# from app.models.db_model.base import Base
 
 # print("🔍 관계 매핑 확인")
 # for mapper in Base.registry.mappers:

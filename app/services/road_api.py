@@ -91,12 +91,14 @@ def find_caution_sections(start_loc:list,end_loc:list):
 
     params = {
         "apiKey": ROAD_API_KEY,
-        "minX": f"{start_loc[0]}",
-        "maxX": f"{end_loc[0]}",
-        "minY": f"{start_loc[1]}",
-        "maxY": f"{end_loc[1]}",
+        "minX": f"{float(start_loc[0])}",
+        "maxX": f"{float(end_loc[0])}",
+        "minY": f"{float(start_loc[1])}",
+        "maxY": f"{float(end_loc[1])}",
         "getType": "json"
     }
+
+    print('params:', params)
 
     response = requests.get("https://openapi.its.go.kr:9443/posIncidentInfo", headers=headers, params=params)
 

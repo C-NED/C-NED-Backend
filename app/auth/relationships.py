@@ -148,3 +148,36 @@ def admin_refresh_join(Admin=None,RefreshToken=None):
         foreign(RefreshToken.principal_id) == remote(Admin.admin_id),
         RefreshToken.principal_type == 'ADMIN'
     )
+
+def roadinfo_caution_join(RoadInfo=None,Caution=None):
+    from app.models.db_model.road_info import RoadInfo as RoadInfoCls
+    from app.models.db_model.caution import Caution as CautionCls
+    RoadInfo = RoadInfo or RoadInfoCls
+    Caution = Caution or CautionCls
+
+    return and_(
+        foreign(Caution.route_no) == remote(RoadInfo.route_no),
+        Caution.route_no == remote(RoadInfo.route_no)
+    )
+
+def roadinfo_outbreak_join(RoadInfo=None,Outbreak=None):
+    from app.models.db_model.road_info import RoadInfo as RoadInfoCls
+    from app.models.db_model.outbreak import Outbreak as OutbreakCls
+    RoadInfo = RoadInfo or RoadInfoCls
+    Outbreak = Outbreak or OutbreakCls
+
+    return and_(
+        foreign(Outbreak.road_no) == remote(RoadInfo.road_no),
+        Outbreak.road_no == remote(RoadInfo.road_no)
+    )
+
+def roadinfo_vsl_join(RoadInfo=None,Vsl=None):
+    from app.models.db_model.road_info import RoadInfo as RoadInfoCls
+    from app.models.db_model.vsl import Vsl as VslCls
+    RoadInfo = RoadInfo or RoadInfoCls
+    Vsl = Vsl or VslCls
+
+    return and_(
+        foreign(Vsl.road_no) == remote(RoadInfo.road_no),
+        Vsl.road_no == remote(RoadInfo.road_no)
+    )

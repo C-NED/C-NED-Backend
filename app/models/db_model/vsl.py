@@ -11,8 +11,8 @@ from app.models.db_model.types.point import Point
 # from app.models.db_model.admin import Admin
 # from app.models.db_model.user import User
 # from app.models.db_model.navigation import Navigation
-from app.models.db_model.road_info import RoadInfo
-from app.auth.relationships import user_vsl_join,admin_vsl_join
+# from app.models.db_model.road_info import RoadInfo
+from app.auth.relationships import user_vsl_join,admin_vsl_join,roadinfo_vsl_join
 
 
 
@@ -40,7 +40,7 @@ class Vsl(Base):
     updated_at: Mapped[datetime.datetime] = mapped_column(TIMESTAMP, server_default=text('current_timestamp() ON UPDATE current_timestamp()'))
 
     navigation_vsl_from: Mapped['Navigation'] = relationship('Navigation', back_populates='navigation_vsl_to')
-    road_info_vsl_from: Mapped['RoadInfo'] = relationship('RoadInfo', back_populates='road_info_vsl_to')
+    # road_info_vsl_from: Mapped['RoadInfo'] = relationship('RoadInfo', back_populates='road_info_vsl_to')
 
 
      #다형성 fk 정의 
@@ -58,5 +58,13 @@ class Vsl(Base):
         primaryjoin=admin_vsl_join,
         viewonly=True,
         back_populates='admin_vsl_to',
+        lazy='raise'
+    )
+
+    roadinfo_vsl_from: Mapped[Optional['RoadInfo']] = relationship(
+        'RoadInfo',
+        primaryjoin=roadinfo_vsl_join,
+        back_populates='roadinfo_vsl_to',
+        viewonly=True,
         lazy='raise'
     )

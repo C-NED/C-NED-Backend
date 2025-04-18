@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends,Query
 from requests import Session
 from app.models.traffic_model.route import RouteGuideInput, RouteResponse
 from app.repository.dangerous_incident import save_dincident
+from app.repository.outbreak import save_outbreak
 from app.services.naver_api import get_route
 from app.models.traffic_model.default import Model404,Model422
 from app.database import get_db
@@ -11,7 +12,7 @@ from app.repository.road_section import save_road_sections
 from app.repository.guide import save_guide
 from app.models.traffic_model.alert import CautionInput
 from app.repository.caution import save_caution
-from app.services.road_api import find_caution_sections, find_dangerous_incident
+from app.services.road_api import find_caution_sections, find_dangerous_incident, find_outbreaks
 
 #출발지와 도착지 간의 최적 경로 탐색
 
@@ -56,6 +57,14 @@ def create_dincident_auto(navigation_id:str,ptype:str,pid:int,db: Session = Depe
     db.commit()
     return {"saved_dincidents_count": len(dincident)}
 
+def create_outbreak_auto(start:list,goal:list,navigation_id:str,ptype:str,pid:int,db: Session = Depends(get_db)):
+    # 1. Road API 호출 (find_outbreak 로직)
+    data = find_outbreaks(start,goal)
+    outbreak = save_outbreak(db, data["items"], navigation_id, ptype, pid)
+    
+    db.commit()
+    return {"saved_outbreaks_count": len(outbreak)}
+
 @router.post("/create")
 def create_navigation_auto(payload: RouteGuideInput, db: Session = Depends(get_db)):
     # 1. Naver API 호출 (route_guide 로직)
@@ -80,7 +89,17 @@ def create_navigation_auto(payload: RouteGuideInput, db: Session = Depends(get_d
     # )
 
     # 5. dincident 저장
-    dincident = create_dincident_auto(
+    # dincident = create_dincident_auto(
+    #     navigation_id=navigation.navigation_id,
+    #     ptype=navigation.principal_type,
+    #     pid=navigation.principal_id,
+    #     db=db
+    # )
+
+    # 6. outbreak 저장
+    outbreak = create_outbreak_auto(
+        start=list(payload.start),
+        goal=list(payload.goal),
         navigation_id=navigation.navigation_id,
         ptype=navigation.principal_type,
         pid=navigation.principal_id,
@@ -89,4 +108,4 @@ def create_navigation_auto(payload: RouteGuideInput, db: Session = Depends(get_d
 
     db.commit()
     # return {"navigation_id": navigation.navigation_id, "saved_cautions_count": caution["saved_cautions_count"] , "saved_dincidents_count": dincident["saved_dincidents_count"]}
-    return {"navigation_id": navigation.navigation_id, "saved_dincidents_count": dincident["saved_dincidents_count"]}
+    return {"navigation_id": navigation.navigation_id, "saved_outbreak_count": outbreak["saved_outbreaks_count"]}

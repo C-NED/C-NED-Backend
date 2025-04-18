@@ -43,26 +43,25 @@ def find_traffics(type,roadNo,dicType,minX,maxX,minY,maxY):
 
 import requests
 
-def find_outbreaks(type, eventType, minX, minY, maxX, maxY):
+def find_outbreaks(start_loc:list,end_loc:list):
     headers = {
         "User-Agent": "Mozilla/5.0"
     }
 
     params = {
         "apiKey": ROAD_API_KEY,
-        "type": type,
-        "eventType": eventType,
+        "type": "all",
+        "eventType": "all",
         "getType": "json"
     }
 
-    # 네 개의 좌표 값이 모두 존재하는 경우만 params에 추가
-    if all([minX, minY, maxX, maxY]):
-        params.update({
-            "minX": minX,
-            "minY": minY,
-            "maxX": maxX,
-            "maxY": maxY
-        })
+    #받아온 좌표를 float로 변환하여 params에 추가
+    params.update({
+            "minX": f"{float(start_loc[0])}",
+            "maxX": f"{float(end_loc[0])}",
+            "minY": f"{float(start_loc[1])}",
+            "maxY": f"{float(end_loc[1])}",
+    })
 
     response = requests.get("https://openapi.its.go.kr:9443/eventInfo", headers=headers, params=params)
 

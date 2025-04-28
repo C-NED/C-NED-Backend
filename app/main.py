@@ -57,44 +57,81 @@ app = FastAPI(
 
     대표적 기능은 아래와 같습니다.
 
-    
-    **주요 기능 목록**
-    🔹 최적 경로 탐색: `/navigation/route_guide`  
-    🚗 경로를 계산하여 사용자가 최적의 주행 경로를 선택할 수 있도록 지원합니다.
+    🚗 Navigation API
+    목적: 내비게이션 관련 기능을 제공하는 API들로, 경로 탐색, 위치 정보 검색, 좌표 및 주소 반환 등을 처리합니다.
 
-    🔹 선택한 지역의 경도 및 위도 반환: `/navigation/locationpick/coordinate`  
-    📍 사용자가 선택한 위치의 정확한 경도 및 위도를 반환합니다.
+    🛣️ GET /navigation/route_guide:
+    출발지와 도착지 간의 경로를 탐색하는 API입니다.
+    예시: GET /navigation/route_guide?start=서울&end=부산
 
-    🔹 선택한 좌표의 주소 반환: `/navigation/locationpick/address`  
-    🔥 사용자가 지정한 좌표에 대한 정확한 주소를 제공합니다.
+    🔄 POST /navigation/create:
+    자동으로 네비게이션을 생성하는 API입니다.
+    예시: POST /navigation/create { "start": "서울", "end": "부산" }
 
-    🔹 키워드 서치 시 장소 주소 반환: `/navigation/locationpick/search`  
-    ✅ 사용자가 입력한 키워드를 기반으로 관련된 장소의 주소를 반환합니다.
+    📍 GET /navigation/locationpick/coordinate:
+    사용자가 선택한 지역의 경도와 위도를 반환하는 API입니다.
+    예시: GET /navigation/locationpick/coordinate?location=서울
 
-    🔹 IP를 기반으로 GPS 위치 반환: `/navigation/gps`  
-    🌐 사용자의 IP를 기반으로 GPS 위치를 추적합니다.
+    🏙️ GET /navigation/locationpick/address:
+    사용자가 선택한 장소의 주소를 반환하는 API입니다.
+    예시: GET /navigation/locationpick/address?latitude=37.5665&longitude=126.9780
 
-    **부가 기능 목록**
-    - 🚦 교통량 반환: `/route/traffics`  
-    🚗 실시간 교통 상황을 제공하여 최적 경로 선택에 도움을 줍니다.
+    🔍 GET /navigation/locationpick/search:
+    특정 장소를 검색하는 API입니다.
+    예시: GET /navigation/locationpick/search?query=서울역
 
-    - 🚨 돌발상황 반환: `/alert/outbreaks`  
-    ⚠️ 도로상의 돌발 상황 정보를 실시간으로 제공합니다.
+    🚨 Alert API
+    목적: 관리자에게 외부 정보를 알리는 API들로, 돌발 상황, 주의 운전 구간, 위험 물질 사고, 가변속도 표지 정보 등을 제공합니다.
 
-    - ⚠️ 주의운전구간 반환: `/alert/cautions`  
-    🚧 사고 잦은 구간 및 위험 구간에 대한 경고를 제공합니다.
+    💥 GET /alert/outbreaks:
+    돌발상황(예: 사고, 재해 등)을 알리는 API입니다.
+    예시: GET /alert/outbreaks
 
-    - ☠️ 위험물질 운송차량 사고 정보 반환: `/alert/dangerous_incident`  
-    ☠️ 위험물질 운송 차량의 사고 정보를 실시간으로 알려줍니다.
+    ⚠️ GET /alert/cautions:
+    운전자가 주의해야 할 구간(예: 공사 구간, 사고 다발 지역 등)을 알리는 API입니다.
+    예시: GET /alert/cautions
 
-    - 🚧 가변속도표지제한정보 반환: `/alert/vsl`  
-    🚦 도로의 가변속도 제한 표지에 대한 정보를 제공합니다.
+    ☠️ GET /alert/dangerous_incident:
+    위험물질 운송과 관련된 사고 정보를 알리는 API입니다.
+    예시: GET /alert/dangerous_incident
+
+    📉 GET /alert/vsl:
+    가변속도 표지판 정보를 제공하는 API입니다.
+    예시: GET /alert/vsl
+
+    🔑 Auth API
+    목적: 사용자 인증과 인가를 위한 API로, 로그인, 로그아웃, 토큰 발행 및 갱신, 사용자 정보 조회 등을 처리합니다.
+
+    🖊️ POST /auth/login:
+    사용자가 로그인하는 API입니다.
+    예시: POST /auth/login { "username": "user", "password": "pass" }
+
+    🚪 POST /auth/logout:
+    사용자가 로그아웃하는 API입니다.
+    예시: POST /auth/logout
+
+    🟢 GET /auth/access_token/status:
+    현재 발급된 액세스 토큰의 상태를 조회하는 API입니다.
+    예시: GET /auth/access_token/status
+
+    🔄 GET /auth/refresh_token/return_type_info:
+    리프레시 토큰으로 사용자의 정보를 조회하는 API입니다.
+    예시: GET /auth/refresh_token/return_type_info
+
+    🆕 POST /auth/token:
+    액세스 토큰을 발급하는 API입니다.
+    예시: POST /auth/token
+
+    ✔️ POST /auth/access_token/verify:
+    발급된 액세스 토큰의 유효성을 확인하는 API입니다.
+    예시: POST /auth/access_token/verify { "token": "your_token_here" }
+
    """,
-    version="1.0.0",
+    version="1.2.0",
     swagger_ui_parameters={"customCssUrl": "/static/docCustom.css"},  # Ensure this URL is correct
 )
 
-@app.get("/")
+@app.get("/",include_in_schema=False)
 async def root():
     # /docs 경로로 리디렉션
     return RedirectResponse(url="/docs")
@@ -102,13 +139,13 @@ async def root():
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
 app.include_router(navigation,prefix="/navigation",tags=["navigation"])
-# app.include_router(location,prefix="/navigation",tags=["navigation"])
-# app.include_router(search,prefix="/navigation",tags=["navigation"])
+app.include_router(location,prefix="/navigation",tags=["navigation"])
+app.include_router(search,prefix="/navigation",tags=["navigation"])
 # app.include_router(gps,prefix="/navigation",tags=["navigation"])
 
 # app.include_router(traffics,prefix="/alert",tags=["Alert"])
 app.include_router(alert,prefix="/alert",tags=["Alert"])
-# app.include_router(token,prefix="/auth",tags=["auth"])
+app.include_router(token,prefix="/auth",tags=["auth"])
 
 from app.models.db_model.base import Base
 

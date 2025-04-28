@@ -3,6 +3,7 @@ from requests import Session
 from app.models.traffic_model.route import RouteGuideInput, RouteResponse
 from app.repository.dangerous_incident import save_dincident
 from app.repository.outbreak import save_outbreak
+from app.repository.vsl import save_vsl
 from app.services.naver_api import get_route
 from app.models.traffic_model.default import Model404,Model422
 from app.database import get_db
@@ -12,7 +13,7 @@ from app.repository.road_section import save_road_sections
 from app.repository.guide import save_guide
 from app.models.traffic_model.alert import CautionInput
 from app.repository.caution import save_caution
-from app.services.road_api import find_caution_sections, find_dangerous_incident, find_outbreaks
+from app.services.road_api import find_VSL, find_caution_sections, find_dangerous_incident, find_outbreaks
 
 #출발지와 도착지 간의 최적 경로 탐색
 
@@ -65,6 +66,14 @@ def create_outbreak_auto(start:list,goal:list,navigation_id:str,ptype:str,pid:in
     db.commit()
     return {"saved_outbreaks_count": len(outbreak)}
 
+def create_vsl_auto(navigation_id:str,ptype:str,pid:int,db: Session = Depends(get_db)):
+    # 1. Road API 호출(find_vsl)
+    data = find_VSL()
+    vsl = save_vsl(db,data["items"],navigation_id,ptype,pid)
+
+    db.commit()
+    return {"saved_vsls_count":len(vsl)}
+
 @router.post("/create")
 def create_navigation_auto(payload: RouteGuideInput, db: Session = Depends(get_db)):
     # 1. Naver API 호출 (route_guide 로직)
@@ -74,27 +83,27 @@ def create_navigation_auto(payload: RouteGuideInput, db: Session = Depends(get_d
     navigation = save_navigation(db, data[f"{payload.road_option}"][0]['summary'],payload.road_option, principal_type='USER', principal_id=1)
 
     # # 3. Path + Section 저장
-    # save_paths(db, data[f"{payload.road_option}"][0]['path'], navigation.navigation_id)
-    # save_road_sections(db, data[f"{payload.road_option}"][0]['section'], navigation.navigation_id)
-    # save_guide(db, data[f"{payload.road_option}"][0]['guide'], navigation.navigation_id)
+    save_paths(db, data[f"{payload.road_option}"][0]['path'], navigation.navigation_id)
+    save_road_sections(db, data[f"{payload.road_option}"][0]['section'], navigation.navigation_id)
+    save_guide(db, data[f"{payload.road_option}"][0]['guide'], navigation.navigation_id)
 
     # # 4. caution 저장
-    # caution = create_caution_auto(
-    #     navigation_id=navigation.navigation_id,
-    #     start=list(payload.start),
-    #     goal=list(payload.goal),
-    #     ptype=navigation.principal_type,
-    #     pid=navigation.principal_id,
-    #     db=db
-    # )
+    caution = create_caution_auto(
+        navigation_id=navigation.navigation_id,
+        start=list(payload.start),
+        goal=list(payload.goal),
+        ptype=navigation.principal_type,
+        pid=navigation.principal_id,
+        db=db
+    )
 
     # 5. dincident 저장
-    # dincident = create_dincident_auto(
-    #     navigation_id=navigation.navigation_id,
-    #     ptype=navigation.principal_type,
-    #     pid=navigation.principal_id,
-    #     db=db
-    # )
+    dincident = create_dincident_auto(
+        navigation_id=navigation.navigation_id,
+        ptype=navigation.principal_type,
+        pid=navigation.principal_id,
+        db=db
+    )
 
     # 6. outbreak 저장
     outbreak = create_outbreak_auto(
@@ -106,6 +115,14 @@ def create_navigation_auto(payload: RouteGuideInput, db: Session = Depends(get_d
         db=db
     )
 
+    #7. vsl 저장
+    vsl = create_vsl_auto(
+        navigation_id=navigation.navigation_id,
+        ptype=navigation.principal_type,
+        pid=navigation.principal_id,
+        db=db
+    )
+
     db.commit()
     # return {"navigation_id": navigation.navigation_id, "saved_cautions_count": caution["saved_cautions_count"] , "saved_dincidents_count": dincident["saved_dincidents_count"]}
-    return {"navigation_id": navigation.navigation_id, "saved_outbreak_count": outbreak["saved_outbreaks_count"]}
+    return {"navigation_id": navigation.navigation_id, "saved_cautions_count": caution["saved_cautions_count"], "saved_dincidents_count": dincident["saved_dincidents_count"], "saved_outbreaks_count": outbreak["saved_outbreaks_count"], "saved_vsls_count": vsl["saved_vsls_count"]}

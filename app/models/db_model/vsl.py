@@ -33,9 +33,8 @@ class Vsl(Base):
     loc: Mapped[Point] = mapped_column(Point)
     registedDate: Mapped[str] = mapped_column(String(50))
     road_no: Mapped[str] = mapped_column(String(10))
-    default_limit: Mapped[int] = mapped_column(INTEGER(11))
-    cur_speed_limit_min: Mapped[int] = mapped_column(INTEGER(11))
-    cur_speed_limit_max: Mapped[int] = mapped_column(INTEGER(11))
+    default_speed_limit: Mapped[int] = mapped_column(INTEGER(11))
+    cur_speed_limit: Mapped[int] = mapped_column(INTEGER(11))
     created_at: Mapped[datetime.datetime] = mapped_column(DateTime, server_default=text('current_timestamp()'))
     updated_at: Mapped[datetime.datetime] = mapped_column(TIMESTAMP, server_default=text('current_timestamp() ON UPDATE current_timestamp()'))
 

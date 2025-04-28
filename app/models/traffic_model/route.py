@@ -43,3 +43,8 @@ class RouteResponse(BaseModel):
     message: str = Field(..., example="길찾기를 성공하였습니다.")
     currentDateTime: datetime = Field(..., example="2024-08-27T17:17:21")
     route: Route
+
+class RouteGuideInput(BaseModel):
+    start: Tuple[float, float]
+    goal: Tuple[float, float]
+    road_option: str = "trafast"

@@ -80,7 +80,7 @@
 | 항목 | 상태 |
 |------|------|
 | 📦 DB 설계 및 구축 | ✅ 완료 (앱/웹 통합) |
-| 🔐 인증 시스템 | 🛠 구현 중 (JWT + Redis + Refresh Token) |
+| 🔐 인증 시스템 | 🛠 구현 완료 (JWT + Redis + Refresh Token) |
 | 📡 실시간 API | 🔜 WebSocket 구조 설계 예정 |
 | 🚀 배포 브랜치 | `main` 유지 / `test`에서 개발 중 |
 

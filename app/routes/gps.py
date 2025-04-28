@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends,Query
-from app.models.gps import LocationRequest
+from app.models.traffic_model.gps import LocationRequest
 from app.services.naver_api import receive_location
-from app.models.default import Model404,Model422
+from app.models.traffic_model.default import Model404,Model422
 
 router = APIRouter()
 

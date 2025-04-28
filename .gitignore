@@ -2,3 +2,6 @@
 makekey.py
 __pycache__/
 *.pyc
+.vscode
+model.py
+venv/

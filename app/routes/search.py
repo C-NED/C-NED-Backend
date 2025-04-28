@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends,Query
-from app.models.search import SearchResponse
-from app.models.default import Model404,Model422
+from app.models.traffic_model.search import SearchResponse
+from app.models.traffic_model.default import Model404,Model422
 from app.services.naver_api import picklocation_search
 
 router = APIRouter()

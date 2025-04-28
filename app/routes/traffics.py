@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends,Query
 # from app.models.traffics import TrafficResponse
-from app.models.default import Model404,Model422
+from app.models.traffic_model.default import Model404,Model422
 from app.services.road_api import find_traffics
-from app.models.alert import TrafficResponse
+from app.models.traffic_model.alert import TrafficResponse
 
 router = APIRouter()
 

@@ -1,4 +1,4 @@
-(2025.4.1 기준)
+(2025.4.28 기준)
 
 # 🚀 C-NED Backend
 
@@ -13,11 +13,25 @@
 주요 기능에 따라 테이블이 구분되며, 실시간 주행 정보 및 AI 감지 데이터를 효율적으로 처리할 수 있도록 설계되었습니다.
 
 - 📍 주요 테이블:
-  - `navigation`, `path`, `road_section` – 경로 및 주행 정보
+  - `navigation`, `path`, `road_section `guide` – 경로 및 주행 정보
   - `outbreak`, `caution`, `dangerous_incident`, `vsl` – 교통 돌발 상황 및 위험 정보
   - `user`, `admin`, `refresh_token` – 사용자 및 인증 관리
 
 > 이 설계는 실시간 데이터 스트리밍(WebSocket)과 이벤트 기반 데이터 저장 구조를 모두 고려하여 구축되었습니다.
+
+---
+## 🚀 적용한 구조 및 이슈
+
+1. 다형성 fk 적용
+2. refresh token 및 access token 분리 설계(mariadb,redis)
+3. redis에서의 ttl을 짧게 잡고 블랙리스트 등록을 통해 access token을 효율적으로 관리
+4. access token을 요청 시 해당하는 refesh token을 확인하고 만료 시 새로 발급 및 폐기 로직 작성
+5. sql alchemy를 통한 orm 구조 매핑
+6. 순환 참조 해결
+7. refresh token을 해시로 저장 후 시크릿 키를 매번 새로 발급하여 access token을 생성. 이를 통해 보안을 높임
+8. point와 linestring을 이용하여 공간 인덱스를 적용
+9. 복합키와 인덱스를 활용하여 중복되는 공공 데이터를 정확히 식별
+10. 외부 api를 가공하여 db에 알맞게 삽입
 
 ---
 

@@ -14,7 +14,7 @@
 
 - 📍 주요 테이블:
   - `navigation`, `path`, `road_section`, `guide` – 경로 및 주행 정보
-  - `outbreak`, `caution`, `dangerous_incident`, `vsl` – 교통 돌발 상황 및 위험 정보
+  - `outbreak`, `caution`, `dangerous_incident`, `vsl`, `road_info` – 교통 돌발 상황 및 위험 정보
   - `user`, `admin`, `refresh_token` – 사용자 및 인증 관리
 
 > 이 설계는 실시간 데이터 스트리밍(WebSocket)과 이벤트 기반 데이터 저장 구조를 모두 고려하여 구축되었습니다.

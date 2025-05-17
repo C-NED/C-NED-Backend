@@ -4,3 +4,5 @@ __pycache__/
 *.pyc
 cned_mariadb
 akasa*
+venv/
+set_fly_secrets.ps1

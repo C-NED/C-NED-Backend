@@ -28,8 +28,8 @@ router = APIRouter()
         #  description = "start_lat: 출발지 위도, start_lng: 출발지 경도, end_lat: 도착지 위도, end_lng: 도착지 경도, option: 경로 탐색 옵션(trafast,tracomfort,traoptimal,traviodtoll,traavoidcaronly)",
          )
 # 
-def make_route_guide(start: str = Query(default={127.14539383300,37.47309983},description="출발지 경도,위도"),
-                     goal: str = Query(default={129.0756416,35.1795543},description="도착지 경도,위도"),
+def make_route_guide(start: list = Query(default={127.14539383300,37.47309983},description="출발지 경도,위도"),
+                     goal: list = Query(default={129.0756416,35.1795543},description="도착지 경도,위도"),
                      road_option: str = Query(default="trafast",description="경로 탐색 옵션(trafast(가장 빠른 경로),tracomfort(가장 편한 경로),traoptimal(최적의 경로),traviodtoll(무료 우선),traavoidcaronly(차량 우선))")
                      ):
     return get_route(start,goal,road_option)

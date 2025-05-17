@@ -1,8 +1,8 @@
-(2025.4.28 기준)
+(2025.5.17 기준)
 
 # 🚀 C-NED Backend
 
-🔥 배포된 서비스 링크: 👉 [C-NED API 문서](https://port-0-c-ned-backend-m8d025yhc9939d4f.sel4.cloudtype.app/docs)  
+🔥 배포된 서비스 링크: 👉 [C-NED API 문서](https://cned.fly.dev/docs#/)  
 📑 전체 개발 문서: 👉 [Notion 바로가기](https://www.notion.so/1afbb4312b768015945ee3bf76a6a7d3)
 
 ---
@@ -69,20 +69,85 @@
 ## 🔧 기술 스택
 
 - **Backend**: FastAPI  
-- **DB**: MariaDB + Redis  
-- **외부 API**: 네이버 개발자센터 오픈 API, 네이버 클라우드 플랫폼 MAPS API, ITS 공공 API
-- **배포**: cloudtype
+- **Database**: MariaDB
+- **Cache**: Redis
+- **외부 API 연동**:  
+  - 네이버 오픈 API  
+  - 네이버 클라우드 Maps API  
+  - 공공 ITS API  
+- **배포 환경**:
+  - **기존**: Cloudtype (FastAPI 단일 배포)
+  - **현재**: Fly.io (FastAPI 서버) + Railway (MariaDB + Redis)
+
+---
+
+## 🚀 배포 전략 (2025.5.17 기준)
+
+### 🗺️ 인프라 아키텍처
+
+| 구성 요소     | 플랫폼    |
+|--------------|-----------|
+| FastAPI 서버 | Fly.io    |
+| MariaDB      | Railway   |
+| Redis        | Railway   |
+| 환경변수     | Fly.io secrets |
+| 빌드         | Dockerfile + `fly.toml` |
+
+---
+
+### 🔄 배포 흐름
+
+1. FastAPI 앱은 `flyctl deploy`로 Fly.io에 직접 배포
+2. `.env` 대신 `fly secrets`로 환경변수 주입
+3. Railway의 DB/Redis 접속 정보를 환경변수로 가져옴
+4. `wait_for_mariadb()`로 초기 DB 연결 대기 로직 설정
+5. 로컬과 운영 환경 분리 (`os.getenv()` 기반)
+
+---
+
+### 🧨 Fly.io 마이그레이션 이슈 정리
+
+| 항목 | 내용 |
+|------|------|
+| ✅ 구조 전환 | Cloudtype → Fly.io(FastAPI) + Railway(RDB/Redis) |
+| ⚠️ mise 에러 | `gzip header` 문제로 Python 설치 실패 → 수동 회피 |
+| ⚠️ secrets 에러 | `ACCESS_EXPIRE_MINUTES`가 None으로 인식 → 예외처리 필요 |
+| ⏳ 초기 지연 | secrets 주입 후 몇 분간 접근 오류 발생함 |
+| 🔁 머신 회복 | 머신 재시작 후 작동되나, 자동 재기동 루프는 조심 |
+| 🛠 wait_for_mariadb | 연결 실패 시 루프 돌도록 설계 (최대 시도 제한 권장) |
+
+---
+
+### 🧱 Railway 관련 이슈
+
+| 항목                      | 상태                                   |
+| ----------------------- | ------------------------------------ |
+| 🐘 MariaDB FK 마이그레이션 오류 | ⚠️ 복합키로 인한 FK 실패 → ORM 유효성 검사로 우회    |
+| 🔧 다형성 테이블 FK 충돌        | ✅ FK 제거, `@validates`로 유효성 보완        |
+| 🐛 로컬 ↔ Railway 차이 발생   | ✅ `FOREIGN_KEY_CHECKS=0` 및 수동 데이터 검증 |
+| 🔗 Railway 연결 오류 대응     | ✅ 초기 연결 재시도 루프 삽입, 연결 안정화            |
+| 📦 최종 Import 및 정상화      | ✅ 모든 테이블 Railway에 import 완료          |
 
 ---
 
 ## 🚧 진행 상황
 
-| 항목 | 상태 |
-|------|------|
-| 📦 DB 설계 및 구축 | ✅ 완료 (앱/웹 통합) |
-| 🔐 인증 시스템 | 🛠 구현 완료 (JWT + Redis + Refresh Token) |
-| 📡 실시간 API | 🔜 WebSocket 구조 설계 예정 |
-| 🚀 배포 브랜치 | `main` 유지 / `test`에서 개발 중 |
+| 항목              | 상태                                     |
+| --------------- | -------------------------------------- |
+| 📦 DB 설계 및 구축   | ✅ 완료 (앱/웹 통합)                          |
+| 🔐 인증 시스템       | 🛠 구현 완료 (JWT + Redis + Refresh Token) |
+| 🌐 외부 API 연동    | ✅ 완료                                   |
+| 🗺️ 경로 탐색/지도 응답 | ✅ 확인됨                                  |
+| 📤 배포 연동        | ✅ 완료                                   |
+| 🔌 WebSocket 처리 | 🔜 예정                                  |
+| 📱 앱 연동 (Doby)  | 🛠 진행 중                                |
+| 🧑‍💼 관리자 대시보드(Dorocy)  | 🔜 예정                                  |
+| 🚀 배포 브랜치       | `main` 유지 / `test`에서 개발 중              |
+
+
+---
 
 > 📋 상세 개발 기록 및 작업 흐름은 Notion에서 확인하세요 → [🔗 Notion 바로가기](https://www.notion.so/1afbb4312b768015945ee3bf76a6a7d3)
 <br>작업 상황은 주기적으로 업데이트 될 예정입니다
+
+

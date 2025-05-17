@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from typing import Optional
-
+from sqlalchemy.orm import validates
 from sqlalchemy import DateTime, Enum, ForeignKeyConstraint, Index, String, TIMESTAMP, text
 from sqlalchemy.dialects.mysql import INTEGER
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -18,7 +18,7 @@ class Outbreak(Base):
     __tablename__ = 'outbreak'
     __table_args__ = (
         ForeignKeyConstraint(['navigation_id'], ['navigation.navigation_id'], ondelete='CASCADE', onupdate='CASCADE', name='outbreak_ibfk_1'),
-        ForeignKeyConstraint(['road_no'], ['road_info.road_no'], ondelete='CASCADE', onupdate='CASCADE', name='outbreak_ibfk_2'),
+        # ForeignKeyConstraint(['road_no'], ['road_info.road_no'], ondelete='CASCADE', onupdate='CASCADE', name='outbreak_ibfk_2'),
         Index('navigation_id', 'navigation_id'),
         Index('road_no', 'road_no')
     )
@@ -35,6 +35,14 @@ class Outbreak(Base):
     road_no: Mapped[str] = mapped_column(String(10))
     created_at: Mapped[datetime.datetime] = mapped_column(DateTime, server_default=text('current_timestamp()'))
     updated_at: Mapped[datetime.datetime] = mapped_column(TIMESTAMP, server_default=text('current_timestamp() ON UPDATE current_timestamp()'))
+
+    # roadno 검증증
+    @validates('road_no')
+    def validate_road_no(self, key, value):
+        from app.models.db_model.road_info import RoadInfo
+        from app import session
+        assert session.query(RoadInfo).filter_by(road_no=value).count() > 0, f"Invalid road_no: {value}"
+        return value
 
     navigation_outbreak_from: Mapped['Navigation'] = relationship('Navigation', back_populates='navigation_outbreak_to')
     # road_info_outbreak_from: Mapped['RoadInfo'] = relationship('RoadInfo', back_populates='road_info_outbreak_to')

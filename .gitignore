@@ -2,8 +2,5 @@
 makekey.py
 __pycache__/
 *.pyc
-.vscode
-model.py
-venv/
-akasa
-akasa.pub
+cned_mariadb
+akasa*

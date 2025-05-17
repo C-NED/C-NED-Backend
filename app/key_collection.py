@@ -20,15 +20,9 @@ ACCESS_EXPIRE_MINUTES = int(os.getenv("ACCESS_EXPIRE_MINUTES"))
 SQLALCHEMY_DATABASE_URL = os.getenv("SQLALCHEMY_DATABASE_URL")
 
 # Redis 설정
-REDIS_HOST = os.getenv("REDIS_HOST")  # 기본값은 로컬
-REDIS_PORT = int(os.getenv("REDIS_PORT"))
-REDIS_DB = int(os.getenv("REDIS_DB"))
+REDIS_URL = os.getenv("REDIS_URL")
 
 # mariadb 설정
-MARIADB_HOST = os.getenv("MARIADB_HOST")  # 기본값은 로컬
-MARIADB_PORT = int(os.getenv("MARIADB_PORT"))
-MARIADB_USER = os.getenv("MARIADB_USER")
-MARIADB_DB = os.getenv("MARIADB_DB")
-MARIADB_PASSWORD = os.getenv("MARIADB_PASSWORD")
+MARIADB_URL = os.getenv("MARIADB_URL")
 
 # print("ROAD_API_KEY:", os.getenv("ROAD_API_KEY"))

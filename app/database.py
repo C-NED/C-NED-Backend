@@ -2,13 +2,12 @@ from sqlalchemy import Column, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine
-from app.key_collection import MARIADB_HOST, MARIADB_PORT, MARIADB_USER, MARIADB_PASSWORD, MARIADB_DB
+from app.key_collection import MARIADB_URL
 
 Base = declarative_base()
 
 SQLALCHEMY_DATABASE_URL = (
-    f"mysql+pymysql://{MARIADB_USER}:{MARIADB_PASSWORD}"
-    f"@{MARIADB_HOST}:{MARIADB_PORT}/{MARIADB_DB}"
+    MARIADB_URL
 )
 
 # DB 연결

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from typing import Any, Optional
-
+from sqlalchemy.orm import validates
 from sqlalchemy import DateTime, Enum, ForeignKeyConstraint, Index, String, TIMESTAMP, text
 from sqlalchemy.dialects.mysql import INTEGER
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -20,7 +20,7 @@ class Vsl(Base):
     __tablename__ = 'vsl'
     __table_args__ = (
         ForeignKeyConstraint(['navigation_id'], ['navigation.navigation_id'], ondelete='CASCADE', onupdate='CASCADE', name='vsl_ibfk_1'),
-        ForeignKeyConstraint(['road_no'], ['road_info.road_no'], ondelete='CASCADE', onupdate='CASCADE', name='vsl_ibfk_2'),
+        # ForeignKeyConstraint(['road_no'], ['road_info.road_no'], ondelete='CASCADE', onupdate='CASCADE', name='vsl_ibfk_2'),
         Index('navigation_id', 'navigation_id'),
         Index('road_no', 'road_no')
     )
@@ -37,6 +37,14 @@ class Vsl(Base):
     cur_speed_limit: Mapped[int] = mapped_column(INTEGER(11))
     created_at: Mapped[datetime.datetime] = mapped_column(DateTime, server_default=text('current_timestamp()'))
     updated_at: Mapped[datetime.datetime] = mapped_column(TIMESTAMP, server_default=text('current_timestamp() ON UPDATE current_timestamp()'))
+
+    # roadno 검증
+    @validates('road_no')
+    def validate_road_no(self, key, value):
+        from app.models.db_model.road_info import RoadInfo
+        from app import session
+        assert session.query(RoadInfo).filter_by(road_no=value).count() > 0, f"Invalid road_no: {value}"
+        return value
 
     navigation_vsl_from: Mapped['Navigation'] = relationship('Navigation', back_populates='navigation_vsl_to')
     # road_info_vsl_from: Mapped['RoadInfo'] = relationship('RoadInfo', back_populates='road_info_vsl_to')

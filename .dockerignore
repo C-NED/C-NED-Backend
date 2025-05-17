@@ -1,0 +1,20 @@
+# flyctl launch added from .gitignore
+**\.env
+**\makekey.py
+**\__pycache__
+**\*.pyc
+**\.vscode
+**\model.py
+**\venv
+**\akasa
+**\akasa.pub
+
+# flyctl launch added from venv\Lib\site-packages\xdis\.gitignore
+venv\Lib\site-packages\xdis\.coverage
+venv\Lib\site-packages\xdis\.mypy_cache
+venv\Lib\site-packages\xdis\.python-version
+
+# flyctl launch added from venv\Lib\site-packages\xdis\codetype\.gitignore
+venv\Lib\site-packages\xdis\codetype\.coverage
+venv\Lib\site-packages\xdis\codetype\.mypy_cache
+fly.toml

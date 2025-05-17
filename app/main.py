@@ -15,6 +15,8 @@ from app.models.db_model.base import Base
 from sqlalchemy.orm import relationship
 from app.models.db_model.road_info import RoadInfo
 from app.models.db_model.caution import Caution
+import time
+import pymysql
 
 # # 👇 여기에 모든 모델 import를 명시적으로 추가!
 # from app.models.db_model.user import User
@@ -136,6 +138,33 @@ async def root():
     # /docs 경로로 리디렉션
     return RedirectResponse(url="/docs")
 
+@app.get("/health")
+async def health():
+    return {"status": "ok"}
+
+@app.get("/ping")
+async def ping_redis():
+    await r.set("key", "value")
+    val = await r.get("key")
+    return {"key": val}
+
+# def wait_for_mariadb():
+#     for i in range(10):
+#         try:
+#             conn = pymysql.connect(
+#                 MARIADB_URL=os.getenv("MARIADB_URL"),
+#             )
+#             conn.close()
+#             print("✅ MariaDB 연결 성공")
+#             return
+#         except Exception as e:
+#             print(f"⏳ MariaDB 대기 중... ({i+1}/10)")
+#             time.sleep(3)
+#     raise Exception("❌ MariaDB 연결 실패")
+
+# # main.py 초기화 코드 상단에 삽입
+# wait_for_mariadb()
+
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
 app.include_router(navigation,prefix="/navigation",tags=["navigation"])
@@ -159,6 +188,4 @@ from app.models.db_model.base import Base
 #     print(f"[{cls.__name__}] 관계:")
 #     for rel in mapper.relationships:
 #         print(f" - {rel.key} -> {rel.mapper.class_.__name__}")
-
-
 

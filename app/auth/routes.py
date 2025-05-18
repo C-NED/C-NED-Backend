@@ -10,7 +10,7 @@ from app.models.db_model.refresh_token import RefreshToken
 from fastapi import HTTPException, status
 from jose import JWTError, jwt
 from app.database import get_db
-from app.auth.schemas import Login422ErrorResponse, LoginResponse, RefreshTokenRequest,RefreshtokenResponse,model401,model404,model422
+from app.auth.schemas import Login422ErrorResponse, LoginResponse, RefreshTokenRequest,RefreshtokenResponse,model401,model404,model422,LoginRequest
 from app.auth.services.auth_type import get_auth_type
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from app.auth.services.token import r
@@ -52,11 +52,15 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/token")
             }
         }
     })
-def login_user(email: str, password: str, type: str, db: Session = Depends(get_db)):
+def login_user(data:LoginRequest, db: Session = Depends(get_db)):
+    email = data.email
+    password = data.password
+    ptype = data.type
+    password_hashed = hashlib.sha256(password.encode()).hexdigest()
     
     # 기존 refresh_token 확인 후 access_token만 새로 발급
-    if type == "USER":
-        user = db.query(User).filter_by(email=email, password=password).first()
+    if ptype == "USER":
+        user = db.query(User).filter_by(email=email, password=password_hashed).first()
        
         #일단 테스트값의 경우 해시가 아닌 문자열으로 저장하였으므로 나중에 다 해시로 바꾸고 아래 코드로 바꿀 것       
         # 저장된 password는 SHA-256 해시값
@@ -68,8 +72,8 @@ def login_user(email: str, password: str, type: str, db: Session = Depends(get_d
         if not user:
             raise HTTPException(status_code=401, detail="Invalid credentials, user not exist")
         principal_id = user.user_id
-    elif type == "ADMIN":
-        admin = db.query(Admin).filter_by(email=email, password=password).first()
+    elif ptype == "ADMIN":
+        admin = db.query(Admin).filter_by(email=email, password=password_hashed).first()
         if not admin:
             raise HTTPException(status_code=401, detail="Invalid credentials, admin not exist")
         principal_id = admin.admin_id
@@ -79,7 +83,7 @@ def login_user(email: str, password: str, type: str, db: Session = Depends(get_d
     # 기존 refresh_token 확인
     token_in_db = db.query(RefreshToken).filter_by(
         principal_id=principal_id,
-        principal_type=type
+        principal_type=ptype
     ).first()
 
 
@@ -87,7 +91,7 @@ def login_user(email: str, password: str, type: str, db: Session = Depends(get_d
         # ✅ 유효하면 access_token만 새로 발급
         access_token = create_access_token({
             "principal_id": principal_id,
-            "principal_type": type,
+            "principal_type": ptype,
         })
         return {
             "access_token": access_token,
@@ -95,10 +99,10 @@ def login_user(email: str, password: str, type: str, db: Session = Depends(get_d
         }
 
     # 만료되었거나 없음 → 새로 발급
-    refresh_token, secret_key = create_refresh_token(db, principal_id, type)
+    refresh_token, secret_key = create_refresh_token(db, principal_id, ptype)
     access_token = create_access_token({
         "principal_id": principal_id,
-        "principal_type": type,
+        "principal_type": ptype,
     }, secret_key=secret_key)
 
     return {
@@ -124,6 +128,30 @@ def token_status(token: str = Depends(oauth2_scheme)):
         return {"status": "permanent"}
     return {"status": "active", "seconds_left": ttl}
 
+
+@router.post("/auth/register", response_model=LoginResponse)
+def register_user(email: str, password: str, name: str, db: Session = Depends(get_db)):
+    existing = db.query(User).filter_by(email=email).first()
+    if existing:
+        raise HTTPException(status_code=400, detail="이미 등록된 이메일입니다.")
+
+    hashed_pw = hashlib.sha256(password.encode()).hexdigest()
+    new_user = User(email=email, password=hashed_pw, name=name)
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+
+    # 회원가입 후 바로 로그인 처리
+    refresh_token, secret_key = create_refresh_token(db, new_user.user_id, "USER")
+    access_token = create_access_token({
+        "principal_id": new_user.user_id,
+        "principal_type": "USER",
+    }, secret_key=secret_key)
+
+    return {
+        "access_token": access_token,
+        "refresh_token": refresh_token
+    }
 
 # @router.post("/refresh_token/refresh", responses={200:{"description":"리프레시 토큰 생성 성공","model":RefreshtokenResponse},401:{"description":"Error:Unauthorized","model":model401},404:{"description":"리프레시 토큰 반환 실패","model":model404},422:{"description":"Error: Unprocessable Entity","model":model422}})
 # def refresh_token(request: RefreshTokenRequest, db: Session = Depends(get_db)):

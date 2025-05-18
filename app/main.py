@@ -146,11 +146,11 @@ async def root():
     # /docs 경로로 리디렉션
     return RedirectResponse(url="/docs")
 
-@app.get("/health")
+@app.get("/health",include_in_schema=False)
 async def health():
     return {"status": "ok"}
 
-@app.get("/ping")
+@app.get("/ping",include_in_schema=False)
 async def ping_redis():
     await r.set("key", "value")
     val = await r.get("key")

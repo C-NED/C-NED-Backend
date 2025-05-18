@@ -29,6 +29,11 @@ class model422(BaseModel):
 class RefreshtokenResponse(BaseModel):
     detail: str
 
+class LoginRequest(BaseModel):
+    email: str
+    password: str
+    type: str
+
 class LoginResponse(BaseModel):
     access_token : str
 

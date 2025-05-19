@@ -1,20 +1,26 @@
-# flyctl launch added from .gitignore
-**\.env
-**\makekey.py
-**\__pycache__
-**\*.pyc
-**\.vscode
-**\model.py
-**\venv
-**\akasa
-**\akasa.pub
+# 환경 변수 및 민감 파일
+.env
+makekey.py
+model.py
+akasa
+akasa.pub
 
-# flyctl launch added from venv\Lib\site-packages\xdis\.gitignore
-venv\Lib\site-packages\xdis\.coverage
-venv\Lib\site-packages\xdis\.mypy_cache
-venv\Lib\site-packages\xdis\.python-version
+# Python 캐시
+__pycache__/
+*.pyc
 
-# flyctl launch added from venv\Lib\site-packages\xdis\codetype\.gitignore
-venv\Lib\site-packages\xdis\codetype\.coverage
-venv\Lib\site-packages\xdis\codetype\.mypy_cache
+# 에디터 설정
+.vscode/
+
+# 가상환경
+venv/
+
+# Fly 설정 파일
 fly.toml
+
+# 기타 라이브러리 캐시들 (보통 venv 안에 포함되므로 생략 가능하지만 명시적으로 남김)
+venv/Lib/site-packages/xdis/.coverage
+venv/Lib/site-packages/xdis/.mypy_cache
+venv/Lib/site-packages/xdis/.python-version
+venv/Lib/site-packages/xdis/codetype/.coverage
+venv/Lib/site-packages/xdis/codetype/.mypy_cache

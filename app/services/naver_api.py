@@ -5,6 +5,7 @@ from app.models.traffic_model.default import Model404,Model422
 from app.key_collection import NAVERCLOUD_CLIENT_ID,NAVERCLOUD_CLIENT_SECRET,NAVER_CLIENT_ID,NAVER_CLIENT_SECRET
 from fastapi import APIRouter, Depends,Query
 from app.models.traffic_model.gps import LocationRequest
+import re
 
 NAVER_ROUTE_API_URL = "https://naveropenapi.apigw.ntruss.com/map-direction/v1/driving"
 
@@ -109,20 +110,28 @@ def picklocation_search(keyword : str):
     
     if response.status_code == 200:
         data = response.json()
+        print("data:",data)
         
         if data.get("items"):
             Items = data["items"][0]
-            mapx = int(Items["mapx"]) / 10000000
-            mapy = int(Items["mapy"]) / 10000000
+            try:
+                mapx = int(Items.get("mapx", "0")) / 10000000
+                mapy = int(Items.get("mapy", "0")) / 10000000
+            except ValueError:
+                return {"error": "Invalid map coordinates"}
+            title = re.sub(r"<.*?>", "", Items["title"])  # 태그 제거
 
-            return {
-                "title" : Items["title"],
+            realresponse = {
+                "title" : title,
                 "link" : Items["link"],
                 "category" : Items["category"],
                 "roadAddress" : Items["roadAddress"],
                 "mapx" : str(mapx),
                 "mapy" : str(mapy)
             }
+            print("realresponse:",realresponse)
+
+            return realresponse
     else:
         return {"error": "Failed to fetch location", "status_code": response.status_code}
     

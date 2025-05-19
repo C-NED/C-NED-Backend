@@ -2,8 +2,12 @@
 makekey.py
 __pycache__/
 *.pyc
-.vscode
+
+cned_mariadb
+akasa*
 model.py
 venv/
+set_fly_secrets.ps1
 akasa
 akasa.pub
+.vscode

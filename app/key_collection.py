@@ -19,4 +19,10 @@ ACCESS_EXPIRE_MINUTES = int(os.getenv("ACCESS_EXPIRE_MINUTES"))
 
 SQLALCHEMY_DATABASE_URL = os.getenv("SQLALCHEMY_DATABASE_URL")
 
+# Redis 설정
+REDIS_URL = os.getenv("REDIS_URL")
+
+# mariadb 설정
+MARIADB_URL = os.getenv("MARIADB_URL")
+
 # print("ROAD_API_KEY:", os.getenv("ROAD_API_KEY"))

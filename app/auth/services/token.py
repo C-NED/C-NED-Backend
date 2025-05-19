@@ -10,10 +10,13 @@ from app.key_collection import SECRET_KEY,ALGORITHM,ACCESS_EXPIRE_MINUTES
 import secrets
 from fastapi import HTTPException, status
 import hashlib
-
+from app.key_collection import REDIS_URL
 
 # Redis 연결
-r = redis.Redis(host='localhost', port=6379, db=0)
+r = redis.from_url(
+    REDIS_URL,
+    decode_responses=True  # string 자동 디코딩
+)
 
 try:
     pong = r.ping()

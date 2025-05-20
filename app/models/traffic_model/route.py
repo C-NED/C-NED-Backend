@@ -49,7 +49,6 @@ class RouteGuideInput(BaseModel):
     goal: Tuple[float, float]
     road_option: str = "trafast"
 
-
 class CoordInput(BaseModel):
     start_lat: float
     start_lng: float

@@ -153,6 +153,38 @@ def create_navigation_auto(payload: RouteGuideInput, db: Session = Depends(get_d
     return {"navigation_id": navigation.navigation_id, "saved_cautions_count": caution["saved_cautions_count"], "saved_dincidents_count": dincident["saved_dincidents_count"], "saved_outbreaks_count": outbreak["saved_outbreaks_count"], "saved_vsls_count": vsl["saved_vsls_count"]}
 
 
+import random
+
+def find_valid_coord(source: list[float], target: list[float], road_option: str) -> list[float]:
+    """
+    source: [lat, lng]
+    target: [lat, lng]
+    road_option: str (e.g., 'traavoidcaronly')
+    
+    return: 보정된 source 좌표
+    """
+    tried = set()
+
+    # 점진적으로 탐색 반경을 확장하면서 최대 40회 시도
+    for radius in [0.00005, 0.0001, 0.0002, 0.0003]:
+        for _ in range(10):
+            dlat = random.uniform(-radius, radius)
+            dlng = random.uniform(-radius, radius)
+            test_lat = round(source[0] + dlat, 8)
+            test_lng = round(source[1] + dlng, 8)
+
+            if (test_lat, test_lng) in tried:
+                continue
+            tried.add((test_lat, test_lng))
+
+            result = make_route_guide([test_lat, test_lng], target, road_option)
+            if result:
+                print(f"✅ 도로 인식된 좌표: ({test_lat}, {test_lng}) at radius {radius}")
+                return [test_lat, test_lng]
+
+    raise HTTPException(status_code=404, detail="도로 위 좌표를 찾을 수 없습니다.")
+
+
 
 @router.post("/navigation/search_road_and_create")
 def get_road_and_create(payload: CoordInput):

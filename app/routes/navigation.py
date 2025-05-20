@@ -154,13 +154,11 @@ def create_navigation_auto(payload: RouteGuideInput, db: Session = Depends(get_d
 
 
 @router.post('/search_road_location')
-def get_road_snapped_coords(
-    start_lat: float,
-    start_lng: float,
-    goal_lat: float,
-    goal_lng: float,
-    road_option:str,
-) -> dict:
+def get_road_snapped_coords(payload:CoordInput)
+    start = [payload.start_lat, payload.start_lng]
+    goal = [payload.goal_lat, payload.goal_lng]
+    road_option = payload.road_option
+
     offsets = [0, 0.00005, -0.00005, 0.0001, -0.0001]
 
     def find_valid_coord(source: list[float], target: list[float]) -> list[float]:

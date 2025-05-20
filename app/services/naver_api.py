@@ -5,6 +5,7 @@ from app.models.traffic_model.default import Model404,Model422
 from app.key_collection import NAVERCLOUD_CLIENT_ID,NAVERCLOUD_CLIENT_SECRET,NAVER_CLIENT_ID,NAVER_CLIENT_SECRET
 from fastapi import APIRouter, Depends,Query
 from app.models.traffic_model.gps import LocationRequest
+from fastapi import HTTPException
 import re
 
 NAVER_ROUTE_API_URL = "https://naveropenapi.apigw.ntruss.com/map-direction/v1/driving"

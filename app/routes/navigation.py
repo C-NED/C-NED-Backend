@@ -14,6 +14,8 @@ from app.repository.guide import save_guide
 from app.models.traffic_model.alert import CautionInput
 from app.repository.caution import save_caution
 from app.services.road_api import find_VSL, find_caution_sections, find_dangerous_incident, find_outbreaks
+from fastapi import HTTPException
+
 
 #출발지와 도착지 간의 최적 경로 탐색
 
@@ -57,6 +59,7 @@ def create_dincident_auto(navigation_id:str,ptype:str,pid:int,db: Session = Depe
     
     db.commit()
     return {"saved_dincidents_count": len(dincident)}
+
 
 def create_outbreak_auto(start:list,goal:list,navigation_id:str,ptype:str,pid:int,db: Session = Depends(get_db)):
     # 1. Road API 호출 (find_outbreak 로직)
@@ -148,3 +151,20 @@ def create_navigation_auto(payload: RouteGuideInput, db: Session = Depends(get_d
     db.commit()
     # return {"navigation_id": navigation.navigation_id, "saved_cautions_count": caution["saved_cautions_count"] , "saved_dincidents_count": dincident["saved_dincidents_count"]}
     return {"navigation_id": navigation.navigation_id, "saved_cautions_count": caution["saved_cautions_count"], "saved_dincidents_count": dincident["saved_dincidents_count"], "saved_outbreaks_count": outbreak["saved_outbreaks_count"], "saved_vsls_count": vsl["saved_vsls_count"]}
+
+
+@router.get('/search_road_location')
+def get_road_snapped_coords(lat: float, lng: float, goal_lat: float, goal_lng: float) -> tuple[float, float]:
+    offsets = [0, 0.00005, -0.00005, 0.0001, -0.0001]  # 약 5m ~ 10m 정도 이동
+
+    for dlat in offsets:
+        for dlng in offsets:
+            test_lat = lat + dlat
+            test_lng = lng + dlng
+            result = call_naver_route_api(test_lng, test_lat, goal_lng, goal_lat)
+            if result:
+                print(f"✅ 도로 인식된 좌표: {test_lng}, {test_lat}")
+                return test_lat, test_lng
+
+    raise ValueError("근처 도로 좌표를 찾을 수 없습니다.")
+

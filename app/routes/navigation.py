@@ -76,18 +76,33 @@ def create_vsl_auto(navigation_id:str,ptype:str,pid:int,db: Session = Depends(ge
 
 @router.post("/create")
 def create_navigation_auto(payload: RouteGuideInput, db: Session = Depends(get_db)):
-    # 1. Naver API 호출 (route_guide 로직)
-    data = get_route(payload.start,payload.goal,payload.road_option)
+   # 1. Naver API 호출 (route_guide 로직) 
+   data = get_route(payload.start, payload.goal, payload.road_option)
+
+    # 방어코드 추가
+    if data is None or not isinstance(data, dict):
+        raise HTTPException(status_code=502, detail="외부 경로 API 호출 실패 혹은 응답 파싱 오류")
 
     if payload.road_option not in data:
         raise HTTPException(status_code=400, detail=f"Invalid road option: {payload.road_option}")
 
+    option_data = data[payload.road_option]
+    if not option_data or not isinstance(option_data, list):
+        raise HTTPException(status_code=400, detail="경로 응답이 비어있거나 잘못된 형식")
+
     summary = option_data[0].get('summary')
     if not summary:
         raise HTTPException(status_code=400, detail="경로 응답에 summary 없음")
-    
+
     # 2. Navigation 저장
-    navigation = save_navigation(db,summary,payload.road_option, principal_type='USER', principal_id=1)
+    navigation = save_navigation(
+        db,
+        summary,
+        payload.road_option,
+        principal_type='USER',
+        principal_id=1
+    )
+
 
     # # 3. Path + Section 저장
     save_paths(db, data[f"{payload.road_option}"][0]['path'], navigation.navigation_id)

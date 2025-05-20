@@ -27,11 +27,20 @@ def get_route(start: list[float,float], goal: list[float,float], road_option: st
     response = requests.get(NAVER_ROUTE_API_URL, headers=headers, params=params)
     
     if response.status_code == 200:
-        data = response.json()
-        if data.get("route"):
+        try:
+            data = response.json()
+        except Exception as e:
+            print(f"❌ JSON 파싱 실패: {e}")
+            return None
+
+        if "route" in data:
             return data["route"]
+        else:
+            print("❌ 'route' 키가 응답에 없음:", data)
+            return None
     else:
-        return {"error": "Failed to fetch route", "status_code": response.status_code}
+        print(f"❌ 네이버 API 실패: {response.status_code}, 내용: {response.text}")
+        return None  # ✅ 실패 시 None으로 통일
 
 
 def picklocation_co(query : str):

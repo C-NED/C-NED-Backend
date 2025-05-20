@@ -10,8 +10,8 @@ def save_caution(db: Session, cautions: dict,navigation_id:int,principal_type: s
    
         try:
             coords = [
-                (float(c["startY"]),float(c["startX"])),
-                (float(c["revY"]),float(c["revX"]),)
+                (float(c["startX"]), float(c["startY"])),
+                (float(c["revX"]), float(c["revY"]))
             ]
             loc = LineString(coords)
             wkt = loc.wkt  # 예: 'LINESTRING (126.1234 37.5678, 126.4567 37.6789)'

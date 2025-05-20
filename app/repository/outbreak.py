@@ -9,7 +9,7 @@ def save_outbreak(db: Session, outbreaks: dict,navigation_id:int,principal_type:
     for o in outbreaks:
    
         try:
-            coord = float(o["coordY"]),float(o["coordX"]),
+            coord = float(o["coordX"]), float(o["coordY"])
             loc = ShapelyPoint(coord)
             wkt = loc.wkt  # 예: 'LINESTRING (126.1234 37.5678, 126.4567 37.6789)'
 

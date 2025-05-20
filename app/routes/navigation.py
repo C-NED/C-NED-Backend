@@ -79,8 +79,10 @@ def create_vsl_auto(navigation_id:str,ptype:str,pid:int,db: Session = Depends(ge
 
 @router.post("/create")
 def create_navigation_auto(payload: RouteGuideInput, db: Session = Depends(get_db)):
+    console.log(payload)
     # 1. Naver API 호출 (route_guide 로직) 
     data = get_route(payload.start, payload.goal, payload.road_option)
+    console.log(data)
 
     # 방어코드 추가
     if data is None or not isinstance(data, dict):
@@ -107,50 +109,51 @@ def create_navigation_auto(payload: RouteGuideInput, db: Session = Depends(get_d
     )
 
 
-    # # 3. Path + Section 저장
-    save_paths(db, data[f"{payload.road_option}"][0]['path'], navigation.navigation_id)
-    save_road_sections(db, data[f"{payload.road_option}"][0]['section'], navigation.navigation_id)
-    save_guide(db, data[f"{payload.road_option}"][0]['guide'], navigation.navigation_id)
+    # # # 3. Path + Section 저장
+    # save_paths(db, data[f"{payload.road_option}"][0]['path'], navigation.navigation_id)
+    # save_road_sections(db, data[f"{payload.road_option}"][0]['section'], navigation.navigation_id)
+    # save_guide(db, data[f"{payload.road_option}"][0]['guide'], navigation.navigation_id)
 
-    # # 4. caution 저장
-    caution = create_caution_auto(
-        navigation_id=navigation.navigation_id,
-        start=list(payload.start),
-        goal=list(payload.goal),
-        ptype=navigation.principal_type,
-        pid=navigation.principal_id,
-        db=db
-    )
+    # # # 4. caution 저장
+    # caution = create_caution_auto(
+    #     navigation_id=navigation.navigation_id,
+    #     start=list(payload.start),
+    #     goal=list(payload.goal),
+    #     ptype=navigation.principal_type,
+    #     pid=navigation.principal_id,
+    #     db=db
+    # )
 
-    # 5. dincident 저장
-    dincident = create_dincident_auto(
-        navigation_id=navigation.navigation_id,
-        ptype=navigation.principal_type,
-        pid=navigation.principal_id,
-        db=db
-    )
+    # # 5. dincident 저장
+    # dincident = create_dincident_auto(
+    #     navigation_id=navigation.navigation_id,
+    #     ptype=navigation.principal_type,
+    #     pid=navigation.principal_id,
+    #     db=db
+    # )
 
-    # 6. outbreak 저장
-    outbreak = create_outbreak_auto(
-        start=list(payload.start),
-        goal=list(payload.goal),
-        navigation_id=navigation.navigation_id,
-        ptype=navigation.principal_type,
-        pid=navigation.principal_id,
-        db=db
-    )
+    # # 6. outbreak 저장
+    # outbreak = create_outbreak_auto(
+    #     start=list(payload.start),
+    #     goal=list(payload.goal),
+    #     navigation_id=navigation.navigation_id,
+    #     ptype=navigation.principal_type,
+    #     pid=navigation.principal_id,
+    #     db=db
+    # )
 
-    #7. vsl 저장
-    vsl = create_vsl_auto(
-        navigation_id=navigation.navigation_id,
-        ptype=navigation.principal_type,
-        pid=navigation.principal_id,
-        db=db
-    )
+    # #7. vsl 저장
+    # vsl = create_vsl_auto(
+    #     navigation_id=navigation.navigation_id,
+    #     ptype=navigation.principal_type,
+    #     pid=navigation.principal_id,
+    #     db=db
+    # )
 
     db.commit()
+    return {"navigation_id" : navigation.navigation_id }
     # return {"navigation_id": navigation.navigation_id, "saved_cautions_count": caution["saved_cautions_count"] , "saved_dincidents_count": dincident["saved_dincidents_count"]}
-    return {"navigation_id": navigation.navigation_id, "saved_cautions_count": caution["saved_cautions_count"], "saved_dincidents_count": dincident["saved_dincidents_count"], "saved_outbreaks_count": outbreak["saved_outbreaks_count"], "saved_vsls_count": vsl["saved_vsls_count"]}
+    # return {"navigation_id": navigation.navigation_id, "saved_cautions_count": caution["saved_cautions_count"], "saved_dincidents_count": dincident["saved_dincidents_count"], "saved_outbreaks_count": outbreak["saved_outbreaks_count"], "saved_vsls_count": vsl["saved_vsls_count"]}
 
 
 import random

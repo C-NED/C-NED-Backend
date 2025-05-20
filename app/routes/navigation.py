@@ -154,9 +154,11 @@ def create_navigation_auto(payload: RouteGuideInput, db: Session = Depends(get_d
 
 
 @router.post('/search_road_location')
-def get_road_snapped_coords(payload : CoordInput):
-    start = [payload.start_lat, payload.start_lng]
-    goal = [payload.goal_lat, payload.goal_lng]
+def get_road_snapped_coords(payload: CoordInput):
+    start_lat = payload.start_lat
+    start_lng = payload.start_lng
+    goal_lat = payload.goal_lat
+    goal_lng = payload.goal_lng
     road_option = payload.road_option
 
     offsets = [0, 0.00005, -0.00005, 0.0001, -0.0001]
@@ -171,16 +173,12 @@ def get_road_snapped_coords(payload : CoordInput):
                     return test
         raise HTTPException(status_code=404, detail="도로 위 좌표를 찾을 수 없습니다.")
 
-    # 1. start 보정 (goal 기준)
     snapped_start = find_valid_coord([start_lat, start_lng], [goal_lat, goal_lng])
-
-    # 2. goal 보정 (start 기준)
     snapped_goal = find_valid_coord([goal_lat, goal_lng], snapped_start)
 
     return {
         "start_lat": snapped_start[0],
         "start_lng": snapped_start[1],
         "goal_lat": snapped_goal[0],
-        "goal_lng": snapped_goal[1]
+        "goal_lng": snapped_goal[1],
     }
-

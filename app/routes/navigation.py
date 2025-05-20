@@ -172,16 +172,16 @@ def find_valid_coord(source: list[float], target: list[float], road_option: str)
 
             print(f"🔍 시도 중: ({test_lat}, {test_lng}) → target: {target}")
             try:
-                result = make_route_guide([test_lat, test_lng], target, road_option)
+                result = make_route_guide([test_lng,test_lat], target, road_option)
             except Exception as e:
                 print(f"🔥 예외 발생: {e}")
                 continue
 
             if result:
-                print(f"✅ 도로 인식 성공: ({test_lat}, {test_lng})")
+                print(f"✅ 도로 인식 성공: ({test_lng}, {test_lat})")
                 return [test_lat, test_lng]
             else:
-                print(f"❌ 실패 좌표: ({test_lat}, {test_lng})")
+                print(f"❌ 실패 좌표: ( {test_lng}, {test_lat})")
 
     raise HTTPException(status_code=404, detail="도로 위 좌표를 찾을 수 없습니다.")
 

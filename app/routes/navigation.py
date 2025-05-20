@@ -154,17 +154,15 @@ def create_navigation_auto(payload: RouteGuideInput, db: Session = Depends(get_d
 
 
 @router.get('/search_road_location')
-def get_road_snapped_coords(lat: float, lng: float, goal_lat: float, goal_lng: float) -> tuple[float, float]:
-    offsets = [0, 0.00005, -0.00005, 0.0001, -0.0001]  # 약 5m ~ 10m 정도 이동
+def get_road_snapped_coords(start: list[float], goal: list[float], road_option: str) -> list[float]:
+    offsets = [0, 0.00005, -0.00005, 0.0001, -0.0001]  # 약 5~10m
 
     for dlat in offsets:
         for dlng in offsets:
-            test_lat = lat + dlat
-            test_lng = lng + dlng
-            result = call_naver_route_api(test_lng, test_lat, goal_lng, goal_lat)
+            test = [start[0] + dlat, start[1] + dlng]  # [lat, lng]
+            result = make_route_guide(test, goal,road_option)
             if result:
-                print(f"✅ 도로 인식된 좌표: {test_lng}, {test_lat}")
-                return test_lat, test_lng
+                print(f"✅ 도로 인식된 좌표: {test[1]}, {test[0]}")
+                return test
 
     raise ValueError("근처 도로 좌표를 찾을 수 없습니다.")
-

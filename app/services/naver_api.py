@@ -67,7 +67,7 @@ def picklocation_co(query : str):
                 "roadAddress": address_info["roadAddress"],
                 "jibunAddress": address_info["jibunAddress"],
                 "latitude": address_info["y"],
-                "longitude": address_info["x"]
+                "longitude": address_info["x"],
             }
         else:
             return {"error": "No address found"}

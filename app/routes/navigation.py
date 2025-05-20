@@ -153,32 +153,30 @@ def create_navigation_auto(payload: RouteGuideInput, db: Session = Depends(get_d
     return {"navigation_id": navigation.navigation_id, "saved_cautions_count": caution["saved_cautions_count"], "saved_dincidents_count": dincident["saved_dincidents_count"], "saved_outbreaks_count": outbreak["saved_outbreaks_count"], "saved_vsls_count": vsl["saved_vsls_count"]}
 
 
-@router.post('/search_road_location')
-def get_road_snapped_coords(payload: CoordInput):
+
+@router.post("/navigation/search_road_and_create")
+def get_road_and_create(payload: CoordInput):
     start_lat = payload.start_lat
     start_lng = payload.start_lng
     goal_lat = payload.goal_lat
     goal_lng = payload.goal_lng
     road_option = payload.road_option
 
-    offsets = [0, 0.00005, -0.00005, 0.0001, -0.0001]
+    try:
+        snapped_start = find_valid_coord([start_lat, start_lng], [goal_lat, goal_lng], road_option)
+        snapped_goal = find_valid_coord([goal_lat, goal_lng], snapped_start, road_option)
+    except HTTPException:
+        raise HTTPException(status_code=404, detail="유효한 도로 위 좌표를 찾을 수 없습니다.")
 
-    def find_valid_coord(source: list[float], target: list[float]) -> list[float]:
-        for dlat in offsets:
-            for dlng in offsets:
-                test = [source[0] + dlat, source[1] + dlng]
-                result = make_route_guide(test, target, road_option)
-                if result:
-                    print(f"✅ 도로 인식된 좌표: {test[1]}, {test[0]}")
-                    return test
-        raise HTTPException(status_code=404, detail="도로 위 좌표를 찾을 수 없습니다.")
-
-    snapped_start = find_valid_coord([start_lat, start_lng], [goal_lat, goal_lng])
-    snapped_goal = find_valid_coord([goal_lat, goal_lng], snapped_start)
+    # ✅ 보정된 좌표로 create 처리
+    result = make_route_guide(snapped_start, snapped_goal, road_option)
+    if not result:
+        raise HTTPException(status_code=502, detail="경로 생성 실패")
 
     return {
         "start_lat": snapped_start[0],
         "start_lng": snapped_start[1],
         "goal_lat": snapped_goal[0],
         "goal_lng": snapped_goal[1],
+        "route": result,
     }

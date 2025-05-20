@@ -82,7 +82,7 @@ def create_navigation_auto(payload: RouteGuideInput, db: Session = Depends(get_d
     print(payload)
     # 1. Naver API 호출 (route_guide 로직) 
     data = get_route(payload.start, payload.goal, payload.road_option)
-    print.log(data)
+    print(data)
 
     # 방어코드 추가
     if data is None or not isinstance(data, dict):

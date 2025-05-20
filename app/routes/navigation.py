@@ -153,16 +153,36 @@ def create_navigation_auto(payload: RouteGuideInput, db: Session = Depends(get_d
     return {"navigation_id": navigation.navigation_id, "saved_cautions_count": caution["saved_cautions_count"], "saved_dincidents_count": dincident["saved_dincidents_count"], "saved_outbreaks_count": outbreak["saved_outbreaks_count"], "saved_vsls_count": vsl["saved_vsls_count"]}
 
 
-@router.get('/search_road_location')
-def get_road_snapped_coords(start: list[float], goal: list[float], road_option: str) -> list[float]:
-    offsets = [0, 0.00005, -0.00005, 0.0001, -0.0001]  # 약 5~10m
+@router.post('/search_road_location')
+def get_road_snapped_coords(
+    start_lat: float,
+    start_lng: float,
+    goal_lat: float,
+    goal_lng: float,
+    road_option:str,
+) -> dict:
+    offsets = [0, 0.00005, -0.00005, 0.0001, -0.0001]
 
-    for dlat in offsets:
-        for dlng in offsets:
-            test = [start[0] + dlat, start[1] + dlng]  # [lat, lng]
-            result = make_route_guide(test, goal,road_option)
-            if result:
-                print(f"✅ 도로 인식된 좌표: {test[1]}, {test[0]}")
-                return test
+    def find_valid_coord(source: list[float], target: list[float]) -> list[float]:
+        for dlat in offsets:
+            for dlng in offsets:
+                test = [source[0] + dlat, source[1] + dlng]
+                result = make_route_guide(test, target, road_option)
+                if result:
+                    print(f"✅ 도로 인식된 좌표: {test[1]}, {test[0]}")
+                    return test
+        raise HTTPException(status_code=404, detail="도로 위 좌표를 찾을 수 없습니다.")
 
-    raise ValueError("근처 도로 좌표를 찾을 수 없습니다.")
+    # 1. start 보정 (goal 기준)
+    snapped_start = find_valid_coord([start_lat, start_lng], [goal_lat, goal_lng])
+
+    # 2. goal 보정 (start 기준)
+    snapped_goal = find_valid_coord([goal_lat, goal_lng], snapped_start)
+
+    return {
+        "start_lat": snapped_start[0],
+        "start_lng": snapped_start[1],
+        "goal_lat": snapped_goal[0],
+        "goal_lng": snapped_goal[1]
+    }
+

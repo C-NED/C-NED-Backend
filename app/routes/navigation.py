@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends,Query
 from requests import Session
-from app.models.traffic_model.route import RouteGuideInput, RouteResponse
+from app.models.traffic_model.route import RouteGuideInput, RouteResponse,CoordInput
 from app.repository.dangerous_incident import save_dincident
 from app.repository.outbreak import save_outbreak
 from app.repository.vsl import save_vsl

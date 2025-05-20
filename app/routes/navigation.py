@@ -155,18 +155,11 @@ def create_navigation_auto(payload: RouteGuideInput, db: Session = Depends(get_d
 
 import random
 
+# 로깅 추가 + radius 증가 + 좌표 순서 점검
 def find_valid_coord(source: list[float], target: list[float], road_option: str) -> list[float]:
-    """
-    source: [lat, lng]
-    target: [lat, lng]
-    road_option: str (e.g., 'traavoidcaronly')
-    
-    return: 보정된 source 좌표
-    """
     tried = set()
 
-    # 점진적으로 탐색 반경을 확장하면서 최대 40회 시도
-    for radius in [0.00005, 0.0001, 0.0002, 0.0003]:
+    for radius in [0.0001, 0.0003, 0.0005, 0.001]:
         for _ in range(10):
             dlat = random.uniform(-radius, radius)
             dlng = random.uniform(-radius, radius)
@@ -177,12 +170,21 @@ def find_valid_coord(source: list[float], target: list[float], road_option: str)
                 continue
             tried.add((test_lat, test_lng))
 
-            result = make_route_guide([test_lat, test_lng], target, road_option)
+            print(f"🔍 시도 중: ({test_lat}, {test_lng}) → target: {target}")
+            try:
+                result = make_route_guide([test_lat, test_lng], target, road_option)
+            except Exception as e:
+                print(f"🔥 예외 발생: {e}")
+                continue
+
             if result:
-                print(f"✅ 도로 인식된 좌표: ({test_lat}, {test_lng}) at radius {radius}")
+                print(f"✅ 도로 인식 성공: ({test_lat}, {test_lng})")
                 return [test_lat, test_lng]
+            else:
+                print(f"❌ 실패 좌표: ({test_lat}, {test_lng})")
 
     raise HTTPException(status_code=404, detail="도로 위 좌표를 찾을 수 없습니다.")
+
 
 
 

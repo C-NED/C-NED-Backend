@@ -79,9 +79,11 @@ def create_vsl_auto(navigation_id:str,ptype:str,pid:int,db: Session = Depends(ge
 
 @router.post("/create")
 def create_navigation_auto(payload: RouteGuideInput, db: Session = Depends(get_db)):
+    start_v = [payload.start[1],payload.start[0]]
+    end_v = [payload.end[1],payload.end[0]]
     print(payload)
     # 1. Naver API 호출 (route_guide 로직) 
-    data = get_route(payload.start, payload.goal, payload.road_option)
+    data = get_route(start_v, end_v, payload.road_option)
     print(data)
 
     # 방어코드 추가

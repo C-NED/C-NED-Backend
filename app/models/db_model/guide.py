@@ -24,7 +24,7 @@ class Guide(Base):
     
     distance: Mapped[int] = mapped_column(INTEGER(11), nullable=False)
     duration: Mapped[int] = mapped_column(INTEGER(11), nullable=False)
-    instructions: Mapped[str] = mapped_column(String(50), nullable=False)
+    instructions: Mapped[str] = mapped_column(String(255), nullable=False)
     pointidx: Mapped[int] = mapped_column(INTEGER(11), nullable=False)
     step_order: Mapped[int] = mapped_column(INTEGER(11), nullable=False)
 

@@ -1,4 +1,4 @@
-(2025.5.17 기준)
+(2025.5.21 기준)
 
 # 🚀 C-NED Backend
 
@@ -74,14 +74,14 @@
 - **외부 API 연동**:  
   - 네이버 오픈 API  
   - 네이버 클라우드 Maps API  
-  - 공공 ITS API  
+  - 국가교통센터 ITS API  
 - **배포 환경**:
   - **기존**: Cloudtype (FastAPI 단일 배포)
   - **현재**: Fly.io (FastAPI 서버) + Railway (MariaDB + Redis)
 
 ---
 
-## 🚀 배포 전략 (2025.5.17 기준)
+## 🚀 배포 전략 (2025.5.21 기준)
 
 ### 🗺️ 인프라 아키텍처
 
@@ -147,7 +147,7 @@
 
 ---
 
-> 📋 상세 개발 기록 및 작업 흐름은 Notion에서 확인하세요 → [🔗 Notion 바로가기](https://www.notion.so/1afbb4312b768015945ee3bf76a6a7d3)
+> 📋 상세 개발 기록 및 작업 흐름은 Notion에서 확인하세요 → [🔗 Notion 바로가기](https://pouncing-toothpaste-a07.notion.site/1afbb4312b768015945ee3bf76a6a7d3?pvs=4)
 <br>작업 상황은 주기적으로 업데이트 될 예정입니다
 
 

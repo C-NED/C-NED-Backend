@@ -79,10 +79,10 @@ def create_vsl_auto(navigation_id:str,ptype:str,pid:int,db: Session = Depends(ge
 
 @router.post("/create")
 def create_navigation_auto(payload: RouteGuideInput, db: Session = Depends(get_db)):
-    console.log(payload)
+    print(f"payload : ${payload}")
     # 1. Naver API 호출 (route_guide 로직) 
     data = get_route(payload.start, payload.goal, payload.road_option)
-    console.log(data)
+    print(f"data : ${data}")
 
     # 방어코드 추가
     if data is None or not isinstance(data, dict):

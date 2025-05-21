@@ -15,7 +15,7 @@ def save_vsl(db: Session, vsls: dict, navigation_id: int, principal_type: str, p
                 navigation_id=navigation_id,
                 principal_id=principal_id,
                 principal_type=principal_type,
-                vsl_name=v["vslName"],
+                vsl_name=v["vslId"],
                 loc=loc,
                 registedDate=v["registedDate"],
                 road_no=v["roadNo"],

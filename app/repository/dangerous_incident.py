@@ -9,7 +9,7 @@ def save_dincident(db: Session, dincidents: dict,navigation_id:int,principal_typ
     for d in dincidents:
    
         try:
-            coord = float(d["xcrdnt"]), float(d["ycrdnt"])
+            coord = float(d["ycrdnt"]),float(d["xcrdnt"])
             loc = ShapelyPoint(coord)
             # wkt = loc.wkt  # 예: 'LINESTRING (126.1234 37.5678, 126.4567 37.6789)'
 

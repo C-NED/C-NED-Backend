@@ -37,8 +37,11 @@ def make_route_guide(start: list = Query(default={127.14539383300,37.47309983},d
     return get_route(start,goal,road_option)
 
 def create_caution_auto(navigation_id :str, start:list ,goal:list,ptype:str,pid:int,db: Session = Depends(get_db)):
+    start_v = [payload.start[1],payload.start[0]]
+    goal_v = [payload.goal[1],payload.goal[0]]
+
     # 1. Road API 호출 (find_caution 로직)
-    data = find_caution_sections(start,goal)
+    data = find_caution_sections(start_v,goal_v)
     
     # 2. Navigation 저장
         # data["items"]가 리스트 형태인지 확인
@@ -62,14 +65,18 @@ def create_dincident_auto(navigation_id:str,ptype:str,pid:int,db: Session = Depe
 
 
 def create_outbreak_auto(start:list,goal:list,navigation_id:str,ptype:str,pid:int,db: Session = Depends(get_db)):
+    start_v = [payload.start[1],payload.start[0]]
+    goal_v = [payload.goal[1],payload.goal[0]]
+
     # 1. Road API 호출 (find_outbreak 로직)
-    data = find_outbreaks(start,goal)
+    data = find_outbreaks(start_v,goal_v)
     outbreak = save_outbreak(db, data["items"], navigation_id, ptype, pid)
     
     db.commit()
     return {"saved_outbreaks_count": len(outbreak)}
 
 def create_vsl_auto(navigation_id:str,ptype:str,pid:int,db: Session = Depends(get_db)):
+    
     # 1. Road API 호출(find_vsl)
     data = find_VSL()
     vsl = save_vsl(db,data["items"],navigation_id,ptype,pid)
@@ -113,46 +120,46 @@ def create_navigation_auto(payload: RouteGuideInput, db: Session = Depends(get_d
     print(navigation)
 
 
-    # # # 3. Path + Section 저장
-    # save_paths(db, data[f"{payload.road_option}"][0]['path'], navigation.navigation_id)
-    # save_road_sections(db, data[f"{payload.road_option}"][0]['section'], navigation.navigation_id)
-    # save_guide(db, data[f"{payload.road_option}"][0]['guide'], navigation.navigation_id)
+    # # 3. Path + Section 저장
+    save_paths(db, data[f"{payload.road_option}"][0]['path'], navigation.navigation_id)
+    save_road_sections(db, data[f"{payload.road_option}"][0]['section'], navigation.navigation_id)
+    save_guide(db, data[f"{payload.road_option}"][0]['guide'], navigation.navigation_id)
 
-    # # # 4. caution 저장
-    # caution = create_caution_auto(
-    #     navigation_id=navigation.navigation_id,
-    #     start=list(payload.start),
-    #     goal=list(payload.goal),
-    #     ptype=navigation.principal_type,
-    #     pid=navigation.principal_id,
-    #     db=db
-    # )
+    # # 4. caution 저장
+    caution = create_caution_auto(
+        navigation_id=navigation.navigation_id,
+        start=list(payload.start),
+        goal=list(payload.goal),
+        ptype=navigation.principal_type,
+        pid=navigation.principal_id,
+        db=db
+    )
 
-    # # 5. dincident 저장
-    # dincident = create_dincident_auto(
-    #     navigation_id=navigation.navigation_id,
-    #     ptype=navigation.principal_type,
-    #     pid=navigation.principal_id,
-    #     db=db
-    # )
+    # 5. dincident 저장
+    dincident = create_dincident_auto(
+        navigation_id=navigation.navigation_id,
+        ptype=navigation.principal_type,
+        pid=navigation.principal_id,
+        db=db
+    )
 
-    # # 6. outbreak 저장
-    # outbreak = create_outbreak_auto(
-    #     start=list(payload.start),
-    #     goal=list(payload.goal),
-    #     navigation_id=navigation.navigation_id,
-    #     ptype=navigation.principal_type,
-    #     pid=navigation.principal_id,
-    #     db=db
-    # )
+    # 6. outbreak 저장
+    outbreak = create_outbreak_auto(
+        start=list(payload.start),
+        goal=list(payload.goal),
+        navigation_id=navigation.navigation_id,
+        ptype=navigation.principal_type,
+        pid=navigation.principal_id,
+        db=db
+    )
 
-    # #7. vsl 저장
-    # vsl = create_vsl_auto(
-    #     navigation_id=navigation.navigation_id,
-    #     ptype=navigation.principal_type,
-    #     pid=navigation.principal_id,
-    #     db=db
-    # )
+    #7. vsl 저장
+    vsl = create_vsl_auto(
+        navigation_id=navigation.navigation_id,
+        ptype=navigation.principal_type,
+        pid=navigation.principal_id,
+        db=db
+    )
 
     db.commit()
     return {"navigation_id" : navigation.navigation_id }

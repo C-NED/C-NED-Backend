@@ -12,8 +12,8 @@ def save_navigation(db: Session ,summary:list,option:str,principal_type: str, pr
     start = summary['start']['location']
     goal = summary['goal']['location']
 
-    start_shapely = ShapelyPoint(start[0],start[1])
-    end_shapely = ShapelyPoint(goal[0],goal[1])
+    start_shapely = ShapelyPoint(start[1],start[0])
+    end_shapely = ShapelyPoint(goal[1],goal[0])
 
     navigation = Navigation(
         principal_type=principal_type,

@@ -29,4 +29,4 @@ class Point(UserDefinedType):
         return func.ST_GeomFromText(bindvalue, 4326)
 
     def column_expression(self, col):
-        return func.AsText(col)
+        return func.ST_AsText(col)

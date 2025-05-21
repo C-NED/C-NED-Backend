@@ -8,7 +8,7 @@ def save_paths(db: Session, path: list, navigation_id: int):
         path_obj = Path(
             navigation_id=navigation_id,
             pathidx=idx,
-            path_loc=ShapelyPoint(coords[0], coords[1]),
+            path_loc=ShapelyPoint(coords[1], coords[0]),
             step_order=idx + 1
         )
         db.add(path_obj)

@@ -37,8 +37,8 @@ def make_route_guide(start: list = Query(default={127.14539383300,37.47309983},d
     return get_route(start,goal,road_option)
 
 def create_caution_auto(navigation_id :str, start:list ,goal:list,ptype:str,pid:int,db: Session = Depends(get_db)):
-    start_v = [payload.start[1],payload.start[0]]
-    goal_v = [payload.goal[1],payload.goal[0]]
+    start_v = [start[1],start[0]]
+    goal_v = [goal[1],goal[0]]
 
     # 1. Road API 호출 (find_caution 로직)
     data = find_caution_sections(start_v,goal_v)
@@ -65,8 +65,8 @@ def create_dincident_auto(navigation_id:str,ptype:str,pid:int,db: Session = Depe
 
 
 def create_outbreak_auto(start:list,goal:list,navigation_id:str,ptype:str,pid:int,db: Session = Depends(get_db)):
-    start_v = [payload.start[1],payload.start[0]]
-    goal_v = [payload.goal[1],payload.goal[0]]
+    start_v = [start[1],start[0]]
+    goal_v = [goal[1],goal[0]]
 
     # 1. Road API 호출 (find_outbreak 로직)
     data = find_outbreaks(start_v,goal_v)

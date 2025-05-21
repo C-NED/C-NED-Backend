@@ -74,7 +74,7 @@
 - **외부 API 연동**:  
   - 네이버 오픈 API  
   - 네이버 클라우드 Maps API  
-  - 공공 ITS API  
+  - 국가교통센터 ITS API  
 - **배포 환경**:
   - **기존**: Cloudtype (FastAPI 단일 배포)
   - **현재**: Fly.io (FastAPI 서버) + Railway (MariaDB + Redis)

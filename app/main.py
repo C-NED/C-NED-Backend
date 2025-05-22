@@ -11,6 +11,7 @@ from app.routes.alert import router as alert
 from fastapi.staticfiles import StaticFiles
 from app.auth.routes import router as token
 from app.models.db_model.base import Base
+from app.routes.crud import router as crud
 
 from sqlalchemy.orm import relationship
 from app.models.db_model.road_info import RoadInfo
@@ -183,6 +184,7 @@ app.include_router(search,prefix="/navigation",tags=["navigation"])
 # app.include_router(traffics,prefix="/alert",tags=["Alert"])
 app.include_router(alert,prefix="/alert",tags=["Alert"])
 app.include_router(token,prefix="/auth",tags=["auth"])
+app.include_router(crud,prefix="/crud",tags=["CRUD"])
 
 from app.models.db_model.base import Base
 

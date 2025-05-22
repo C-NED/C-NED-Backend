@@ -8,7 +8,7 @@ def save_vsl(db: Session, vsls: dict, navigation_id: int, principal_type: str, p
 
     for v in vsls:
         try:
-            coord = float(v["coordX"]) , float(v["coordY"])
+            coord = float(v["coordY"]), float(v["coordX"]) 
             loc = from_shape(ShapelyPoint(coord), srid=4326)
 
             vsl = Vsl(

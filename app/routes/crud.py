@@ -61,8 +61,8 @@ def preload_path(nav_id: int, db: Session = Depends(get_db)):
 
     # Redis에 저장할 포맷으로 변환
     guide_path = [
-        {"pathidx": pathidx, "point": path_loc}
-        for pathidx, path_loc in path_rows
+        {"pathidx": pathidx, "point": path_loc, "step_order": step_order}
+        for pathidx, path_loc, step_order in path_rows
     ]
 
     r.set(f"navigation:{nav_id}:guide_path", json.dumps(guide_path), ex=3600)

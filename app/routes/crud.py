@@ -15,6 +15,12 @@ r = redis.from_url(
     decode_responses=True  # string 자동 디코딩
 )
 
+try:
+    pong = r.ping()
+    print("Redis 연결 성공!" if pong else "Redis 연결 실패!")
+except Exception as e:
+    print("Redis 연결 오류:", e)
+
 @router.get("/user/navigation/guide/{navigation_id}")
 def get_guide_by_navigation_id(navigation_id: int,db: Session = Depends(get_db) ):
     guide_steps = db.query(Guide).filter(Guide.navigation_id == navigation_id).order_by(Guide.step_order).all()

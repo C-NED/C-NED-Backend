@@ -37,22 +37,31 @@ def get_guide_by_navigation_id(navigation_id: int,db: Session = Depends(get_db) 
 
 @router.post("/user/navigation/{nav_id}/preload_path")
 def preload_path(nav_id: int, db: Session = Depends(get_db)):
-    path_rows = db.query(Path).filter(Path.navigation_id == nav_id).all()
     guide = db.query(Guide).filter(Guide.navigation_id == nav_id).all()
-
-    if not path_rows or not guide:
-        raise HTTPException(status_code=404, detail="경로 또는 안내 없음")
+    if not guide:
+        raise HTTPException(status_code=404, detail="안내 정보 없음")
 
     guide_indices = [g.pointidx for g in guide]
     extended = set(i + d for i in guide_indices for d in [-1, 0, 1])
 
+    # pathidx, path_loc, step_order만 가져옴 (tuple 형태로 반환됨)
+    path_rows = db.query(Path.pathidx, Path.path_loc,Path.step_order)\
+                  .filter(Path.navigation_id == nav_id)\
+                  .filter(Path.pathidx.in_(extended))\
+                  .all()
+
+    if not path_rows:
+        raise HTTPException(status_code=404, detail="경로 없음")
+
+    # Redis에 저장할 포맷으로 변환
     guide_path = [
-        {"pathidx": p.pathidx, "point": p.path_loc}
-        for p in path_rows if p.pathidx in extended
+        {"pathidx": pathidx, "point": path_loc}
+        for pathidx, path_loc in path_rows
     ]
 
     r.set(f"navigation:{nav_id}:guide_path", json.dumps(guide_path), ex=3600)
     return {"message": f"navigation {nav_id} path 캐싱 완료", "count": len(guide_path)}
+
 
 
 @router.get("/user/navigation/{nav_id}/get_cached_path")

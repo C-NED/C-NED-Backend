@@ -53,3 +53,14 @@ def preload_path(nav_id: int, db: Session = Depends(get_db)):
 
     r.set(f"navigation:{nav_id}:guide_path", json.dumps(guide_path), ex=3600)
     return {"message": f"navigation {nav_id} path 캐싱 완료", "count": len(guide_path)}
+
+
+@router.get("/user/navigation/{nav_id}/get_cached_path")
+def get_cached_path(nav_id: int):
+    key = f"navigation:{nav_id}:guide_path"
+    cached = r.get(key)
+
+    if not cached:
+        raise HTTPException(status_code=404, detail="캐시된 경로 없음")
+
+    return json.loads(cached)

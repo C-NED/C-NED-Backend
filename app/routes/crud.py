@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 from app.database import get_db  # get_db 경로는 실제 경로에 맞게
 from app.key_collection import REDIS_URL
 import redis
+import json
 
 router = APIRouter()
 

@@ -9,7 +9,7 @@ from app.models.db_model.caution import Caution
 from app.models.db_model.dangerous_incident import DangerousIncident
 from app.models.db_model.outbreak import Outbreak
 from app.models.db_model.vsl import Vsl
-from app.moidels.common.schemas import CrudRequest
+from app.models.common.schemas import CrudRequest
 from sqlalchemy.orm import Session
 from app.database import get_db  # get_db 경로는 실제 경로에 맞게
 from app.key_collection import REDIS_URL

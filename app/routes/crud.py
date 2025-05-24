@@ -3,6 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from app.models.db_model.navigation import Navigation
 from app.models.db_model.guide import Guide
 from app.models.db_model.user import User
+from app.models.db_model.admin import Admin
 from app.models.db_model.favorite_place import FavoritePlace
 from app.models.db_model.path import Path
 from app.models.db_model.caution import Caution
@@ -97,6 +98,7 @@ TableMap = {
     "user": User,
     "guide": Guide,
     "navigation": Navigation,
+    "admin": Admin.
     "caution": Caution,
     "Dincident": DangerousIncident,
     "outbreak": Outbreak,

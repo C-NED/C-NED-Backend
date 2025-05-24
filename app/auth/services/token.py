@@ -5,6 +5,7 @@ import json
 from jose import jwt
 from sqlalchemy.orm import Session
 from app.models.db_model.refresh_token import RefreshToken
+from app.models.db_model.admin import Admin
 import redis
 from app.key_collection import SECRET_KEY,ALGORITHM,ACCESS_EXPIRE_MINUTES
 import secrets
@@ -33,7 +34,7 @@ def create_access_token(db: Session, data: dict, expires_delta: timedelta = None
     
     # ADMIN인 경우 admin_type 조회 후 principal_type 덮어쓰기
     if data.get("principal_type") == "ADMIN":
-        admin = db.query(AdminModel).filter(AdminModel.id == data["principal_id"]).first()
+        admin = db.query(Admin).filter(Admin.id == data["principal_id"]).first()
         if admin and hasattr(admin, "admin_type") and admin.admin_type:
             to_encode["principal_type"] = admin.admin_type  # ex: "road_admin", "service_admin"
     

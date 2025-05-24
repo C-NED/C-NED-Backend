@@ -6,6 +6,7 @@ from app.models.db_model.user import User
 from app.models.db_model.admin import Admin
 from app.models.db_model.favorite_place import FavoritePlace
 from app.models.db_model.path import Path
+from app.models.db_model.road_info import RoadInfo
 from app.models.db_model.road_section import RoadSection
 from app.models.db_model.caution import Caution
 from app.models.db_model.dangerous_incident import DangerousIncident
@@ -106,7 +107,8 @@ TableMap = {
     "outbreak": Outbreak,
     "vsl": Vsl,
     "favorite_place": FavoritePlace,
-    "path": Path
+    "path": Path,
+    "road_info":RoadInfo,
 }
 
 #일단 risk 테이블 제외

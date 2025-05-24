@@ -25,25 +25,35 @@ except Exception as e:
     print("Redis 연결 오류:", e)
 
 
-def create_access_token(data: dict, expires_delta: timedelta = None,secret_key: str = None):
+def create_access_token(db: Session, data: dict, expires_delta: timedelta = None, secret_key: str = None):
     if secret_key is None:
         secret_key = secrets.token_urlsafe(32)
         
     to_encode = data.copy()
+    
+    # ADMIN인 경우 admin_type 조회 후 principal_type 덮어쓰기
+    if data.get("principal_type") == "ADMIN":
+        admin = db.query(AdminModel).filter(AdminModel.id == data["principal_id"]).first()
+        if admin and hasattr(admin, "admin_type") and admin.admin_type:
+            to_encode["principal_type"] = admin.admin_type  # ex: "road_admin", "service_admin"
+    
     expire = datetime.utcnow() + (expires_delta or timedelta(minutes=ACCESS_EXPIRE_MINUTES))
     to_encode.update({"exp": expire})
+    
     encoded_jwt = jwt.encode(to_encode, secret_key, algorithm=ALGORITHM)
+    
     r.setex(
         encoded_jwt,
         timedelta(minutes=ACCESS_EXPIRE_MINUTES),
         json.dumps({
-            "principal_id": data["principal_id"],
-            "principal_type" : data["principal_type"],
-            "exp" : expire.isoformat()
+            "principal_id": to_encode["principal_id"],
+            "principal_type": to_encode["principal_type"],
+            "exp": expire.isoformat()
         })
     )    
     
     return encoded_jwt
+
 
 def verify_access_token(token: str):
     role = r.get(token)

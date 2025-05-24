@@ -107,7 +107,7 @@ TableMap = {
 
 #일단 risk 테이블 제외
 
-@router.post("/Admin")
+@router.post("/admin")
 async def dynamic_crud(req: CrudRequest, db: Session = Depends(get_db)):
     Model = TableMap.get(req.table)
     if not Model:

@@ -131,10 +131,10 @@ def token_status(token: str = Depends(oauth2_scheme)):
 
 @router.post("/register", response_model=LoginResponse)
 def register_user(user: UserRegisterRequest, db: Session = Depends(get_db)):
-    const email = user.email
-    const password = user.password
-    const name = user.name
-    const utype = user.utype
+    email = user.email
+    password = user.password
+    name = user.name
+    utype = user.utype
     
     existing = db.query(User).filter_by(email=email).first()
     if existing:

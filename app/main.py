@@ -18,6 +18,7 @@ from app.models.db_model.road_info import RoadInfo
 from app.models.db_model.caution import Caution
 import time
 import pymysql
+from .middleware import setup_cors
 
 # # 👇 여기에 모든 모델 import를 명시적으로 추가!
 # from app.models.db_model.user import User
@@ -141,6 +142,8 @@ app = FastAPI(
     version="1.2.0",
     swagger_ui_parameters={"customCssUrl": "/static/docCustom.css"},  # Ensure this URL is correct
 )
+
+setup_cors(app)
 
 @app.get("/",include_in_schema=False)
 async def root():

@@ -89,10 +89,10 @@ def login_user(data:LoginRequest, db: Session = Depends(get_db)):
 
     if token_in_db and token_in_db.expires_at > datetime.utcnow():
         # ✅ 유효하면 access_token만 새로 발급
-        access_token = create_access_token({
-            "principal_id": principal_id,
-            "principal_type": ptype,
-        })
+        access_token = create_access_token(db, {
+        "principal_id": principal_id,
+        "principal_type": ptype,
+    })
         return {
             "access_token": access_token,
             # "refresh_token": token_in_db.refresh_token.hex()  # ← bytes → hex로 반환

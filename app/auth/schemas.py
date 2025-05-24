@@ -44,3 +44,9 @@ class Login422ErrorDetail(BaseModel):
 
 class Login422ErrorResponse(BaseModel):
     detail: List[Login422ErrorDetail]
+
+class UserRegisterRequest(BaseModel):
+    email: str
+    password: str
+    name: str
+    utype: str

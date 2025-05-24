@@ -129,7 +129,7 @@ def token_status(token: str = Depends(oauth2_scheme)):
     return {"status": "active", "seconds_left": ttl}
 
 
-@router.post("/auth/register", response_model=LoginResponse)
+@router.post("/register", response_model=LoginResponse)
 def register_user(email: str, password: str, name: str, db: Session = Depends(get_db)):
     existing = db.query(User).filter_by(email=email).first()
     if existing:

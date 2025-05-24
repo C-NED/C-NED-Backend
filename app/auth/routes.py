@@ -130,7 +130,7 @@ def token_status(token: str = Depends(oauth2_scheme)):
 
 
 @router.post("/register", response_model=LoginResponse)
-def register_user(email: str, password: str, name: str, utype:str, db: Session = Depends(get_db)):
+def register_user(email: str, password: str, name: str, utype: str, db: Session = Depends(get_db)):
     existing = db.query(User).filter_by(email=email).first()
     if existing:
         raise HTTPException(status_code=400, detail="이미 등록된 이메일입니다.")
@@ -142,20 +142,23 @@ def register_user(email: str, password: str, name: str, utype:str, db: Session =
         db.add(new_user)
         db.commit()
         db.refresh(new_user)
-        
-    else utype == "ADMIN":
-        new_admin = ADMIN(email=email, password=hashed_pw, name=name, admin_type=SERVICE)
+        principal_id = new_user.user_id
+    elif utype == "ADMIN":
+        new_admin = ADMIN(email=email, password=hashed_pw, name=name, admin_type="SERVICE")
         db.add(new_admin)
         db.commit()
         db.refresh(new_admin)
+        principal_id = new_admin.admin_id
+    else:
+        raise HTTPException(status_code=400, detail="알 수 없는 사용자 유형입니다.")
 
     # 회원가입 후 바로 로그인 처리
-    refresh_token, secret_key = create_refresh_token(db, new_user.user_id, utype)
+    refresh_token, secret_key = create_refresh_token(db, principal_id, utype)
     access_token = create_access_token({
-        "principal_id": new_user.user_id,
+        "principal_id": principal_id,
         "principal_type": utype,
     }, secret_key=secret_key)
-    
+
     return {
         "access_token": access_token,
         "refresh_token": refresh_token

@@ -101,10 +101,11 @@ TableMap = {
     "Dincident": DangerousIncident,
     "outbreak": Outbreak,
     "vsl": Vsl,
-    "risk": Risk,
     "favorite_place": FavoritePlace,
     "path": Path
 }
+
+#일단 risk 테이블 제외
 
 @router.post("/Admin")
 async def dynamic_crud(req: CrudRequest, db: Session = Depends(get_db)):

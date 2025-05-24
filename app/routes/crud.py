@@ -6,6 +6,7 @@ from app.models.db_model.user import User
 from app.models.db_model.admin import Admin
 from app.models.db_model.favorite_place import FavoritePlace
 from app.models.db_model.path import Path
+from app.models.db_model.road_section import RoadSection
 from app.models.db_model.caution import Caution
 from app.models.db_model.dangerous_incident import DangerousIncident
 from app.models.db_model.outbreak import Outbreak
@@ -99,8 +100,9 @@ TableMap = {
     "guide": Guide,
     "navigation": Navigation,
     "admin": Admin,
+    "road_section":RoadSection,
     "caution": Caution,
-    "Dincident": DangerousIncident,
+    "dincident": DangerousIncident,
     "outbreak": Outbreak,
     "vsl": Vsl,
     "favorite_place": FavoritePlace,

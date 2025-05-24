@@ -2,7 +2,14 @@
 from fastapi import APIRouter, Depends, HTTPException
 from app.models.db_model.navigation import Navigation
 from app.models.db_model.guide import Guide
+from app.models.db_model.user import User
+from app.models.db_model.favorite_place import FavoritePlace
 from app.models.db_model.path import Path
+from app.models.db_model.caution import Caution
+from app.models.db_model.dangerous_incident import DangerousIncident
+from app.models.db_model.outbreak import Outbreak
+from app.models.db_model.vsl import Vsl
+from app.moidels.common.schemas import CrudRequest
 from sqlalchemy.orm import Session
 from app.database import get_db  # get_db 경로는 실제 경로에 맞게
 from app.key_collection import REDIS_URL
@@ -80,3 +87,73 @@ def get_cached_path(nav_id: int):
         raise HTTPException(status_code=404, detail="캐시된 경로 없음")
 
     return json.loads(cached)
+
+
+# crud_map.py
+
+# from models import Risk
+
+TableMap = {
+    "user": User,
+    "guide": Guide,
+    "navigation": Navigation,
+    "caution": Caution,
+    "Dincident": DangerousIncident,
+    "outbreak": Outbreak,
+    "vsl": Vsl,
+    "risk": Risk,
+    "favorite_place": FavoritePlace,
+    "path": Path
+}
+
+@router.post("/Admin")
+async def dynamic_crud(req: CrudRequest, db: Session = Depends(get_db)):
+    Model = TableMap.get(req.table)
+    if not Model:
+        raise HTTPException(status_code=400, detail="Invalid table name")
+
+    if req.action == "read":
+        query = db.query(Model)
+        if req.filter:
+            for key, value in req.filter.items():
+                query = query.filter(getattr(Model, key) == value)
+        results = query.all()
+        return {"success": True, "data": [row.__dict__ for row in results]}
+
+    elif req.action == "create":
+        instance = Model(**req.data)
+        db.add(instance)
+        db.commit()
+        db.refresh(instance)
+        return {"success": True, "data": instance.__dict__}
+
+    elif req.action == "update":
+        query = db.query(Model)
+        if not req.filter:
+            raise HTTPException(status_code=400, detail="Missing filter for update")
+        for key, value in req.filter.items():
+            query = query.filter(getattr(Model, key) == value)
+        instance = query.first()
+        if not instance:
+            raise HTTPException(status_code=404, detail="Item not found")
+        for key, value in req.data.items():
+            setattr(instance, key, value)
+        db.commit()
+        db.refresh(instance)
+        return {"success": True, "data": instance.__dict__}
+
+    elif req.action == "delete":
+        query = db.query(Model)
+        if not req.filter:
+            raise HTTPException(status_code=400, detail="Missing filter for delete")
+        for key, value in req.filter.items():
+            query = query.filter(getattr(Model, key) == value)
+        instance = query.first()
+        if not instance:
+            raise HTTPException(status_code=404, detail="Item not found")
+        db.delete(instance)
+        db.commit()
+        return {"success": True}
+
+    else:
+        raise HTTPException(status_code=400, detail="Invalid action")

@@ -100,10 +100,11 @@ def login_user(data:LoginRequest, db: Session = Depends(get_db)):
 
     # 만료되었거나 없음 → 새로 발급
     refresh_token, secret_key = create_refresh_token(db, principal_id, ptype)
-    access_token = create_access_token({
+    # access_token 발급 부분 db 받게 수정
+    access_token = create_access_token(db, {
         "principal_id": principal_id,
         "principal_type": ptype,
-    }, secret_key=secret_key)
+    })
 
     return {
         "access_token": access_token,

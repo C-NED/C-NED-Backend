@@ -98,7 +98,7 @@ TableMap = {
     "user": User,
     "guide": Guide,
     "navigation": Navigation,
-    "admin": Admin.
+    "admin": Admin,
     "caution": Caution,
     "Dincident": DangerousIncident,
     "outbreak": Outbreak,

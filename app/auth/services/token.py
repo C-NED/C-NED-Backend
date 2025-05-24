@@ -115,7 +115,7 @@ def manage_refresh_token(db: Session, p_id: int, p_type: str):
     refresh_token, secret_key = create_refresh_token(db, p_id, p_type)
     
     # 새 secret_key로 access_token 발급
-    new_access_token = create_access_token({"principal_id": p_id, "principal_type": p_type}, secret_key=secret_key)
+    new_access_token = create_access_token(db, {"principal_id": p_id, "principal_type": p_type}, secret_key=secret_key)
 
     return {"access_token": new_access_token, "refresh_token": refresh_token}
 

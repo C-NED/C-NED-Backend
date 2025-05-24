@@ -10,7 +10,7 @@ from app.models.db_model.refresh_token import RefreshToken
 from fastapi import HTTPException, status
 from jose import JWTError, jwt
 from app.database import get_db
-from app.auth.schemas import Login422ErrorResponse, LoginResponse, RefreshTokenRequest,RefreshtokenResponse,model401,model404,model422,LoginRequest
+from app.auth.schemas import Login422ErrorResponse, LoginResponse, RefreshTokenRequest,RefreshtokenResponse,model401,model404,model422,LoginRequest,UserRegisterRequest
 from app.auth.services.auth_type import get_auth_type
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from app.auth.services.token import r

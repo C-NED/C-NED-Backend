@@ -11,3 +11,4 @@ set_fly_secrets.ps1
 akasa
 akasa.pub
 .vscode
+tree_output.txt

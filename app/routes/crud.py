@@ -174,6 +174,7 @@ async def dynamic_crud(req: CrudRequest, db: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail="Invalid action")
 
 
+# alert 캐싱 API
 @router.post("/user/navigation/{nav_id}/preload_alerts")
 def preload_alerts(nav_id: int, db: Session = Depends(get_db)):
     alert_config = {
@@ -227,3 +228,22 @@ def preload_alerts(nav_id: int, db: Session = Depends(get_db)):
         "count": {k: len(v) for k, v in alert_data.items()}
     }
 
+#alert 조회 API
+@router.get("/user/navigation/{nav_id}/get_cached_alerts")
+def get_cached_alerts(nav_id: int):
+    key = f"navigation:{nav_id}:alert"  # ← 저장 시 일치시키기
+    cached = r.get(key)
+
+    if not cached:
+        raise HTTPException(status_code=404, detail="캐시된 경고 없음")
+
+    try:
+        data = json.loads(cached)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"캐시 파싱 오류: {e}")
+
+    # 반환 형식 표준화: 모든 키 포함, 누락 시 빈 배열
+    expected_keys = ["outbreak", "vsl", "dincident", "caution"]
+    result = {key: data.get(key, []) for key in expected_keys}
+
+    return result

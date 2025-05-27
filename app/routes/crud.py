@@ -247,3 +247,52 @@ def get_cached_alerts(nav_id: int):
     result = {key: data.get(key, []) for key in expected_keys}
 
     return result
+
+
+def estimate_lane_count(road_name: str) -> int:
+    if "고속도로" in road_name or "순환로" in road_name:
+        return 4
+    if "대로" in road_name:
+        return 4
+    if "로" in road_name:
+        return 2
+    return 2  # 기본값
+    # 기본적으로 2차선으로 추정, 필요시 로직 확장 가능
+
+# 차선 정보 캐싱 API
+@router.post("/user/navigation/{nav_id}/preload_road_info")
+def preload_path_with_lane(nav_id: int, db: Session):
+   road_sections = (
+        db.query(RoadSection.pointidx, RoadSection.name)
+        .filter(RoadSection.navigation_id == nav_id)
+        .all()
+    )
+
+    response_list = []
+    for section in road_sections:
+        lane_count = estimate_lane_count(section.name or "")
+        response_list.append({
+            "pointidx": section.pointidx,
+            "road_name": section.name,
+            "lane_count": lane_count
+        })
+
+    r.set(f"navigation:{nav_id}:lane_estimation", json.dumps(response_list), ex=7200)
+
+    return {"status": "ok", "count": len(response_list)}
+
+# 차선 정보 조회 API
+@router.get("/user/navigation/{nav_id}/get_cached_road_info")
+def get_cached_road_info(nav_id: int):
+    key = f"navigation:{nav_id}:lane_estimation"
+    cached = r.get(key)
+
+    if not cached:
+        raise HTTPException(status_code=404, detail="캐시된 도로 정보 없음")
+
+    try:
+        data = json.loads(cached)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"캐시 파싱 오류: {e}")
+
+    return data

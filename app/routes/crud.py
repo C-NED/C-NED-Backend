@@ -297,3 +297,38 @@ def get_cached_road_info(nav_id: int):
         raise HTTPException(status_code=500, detail=f"캐시 파싱 오류: {e}")
 
     return data
+
+# 전체 경로 정보 캐싱 API
+@router.post("/user/navigation/{nav_id}/preload_all")
+def preload_all(nav_id: int, db: Session = Depends(get_db)):
+    preload_path(nav_id, db)
+    preload_alerts(nav_id, db)
+    preload_road_info(nav_id, db)
+    return {"status": "ok"}
+
+# 전체 경로 정보 조회 API
+@router.get("/user/navigation/{nav_id}/get_cached_all")
+def get_cached_all(nav_id: int):
+    path_key = f"navigation:{nav_id}:guide_path"
+    alert_key = f"navigation:{nav_id}:alert"
+    road_info_key = f"navigation:{nav_id}:lane_estimation"
+
+    cached_path = r.get(path_key)
+    cached_alerts = r.get(alert_key)
+    cached_road_info = r.get(road_info_key)
+
+    if not cached_path or not cached_alerts or not cached_road_info:
+        raise HTTPException(status_code=404, detail="캐시된 정보 없음")
+
+    try:
+        path_data = json.loads(cached_path)
+        alert_data = json.loads(cached_alerts)
+        road_info_data = json.loads(cached_road_info)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"캐시 파싱 오류: {e}")
+
+    return {
+        "path": path_data,
+        "alerts": alert_data,
+        "road_info": road_info_data
+    }

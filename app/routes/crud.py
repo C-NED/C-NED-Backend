@@ -15,16 +15,17 @@ from app.models.db_model.vsl import Vsl
 from app.models.common.schemas import CrudRequest
 from sqlalchemy.orm import Session
 from app.database import get_db  # get_db 경로는 실제 경로에 맞게
-from app.key_collection import REDIS_URL
-import redis
 import json
+from app.redis import r  # Redis 클라이언트 인스턴스
+
 
 router = APIRouter()
 
-r = redis.from_url(
-    REDIS_URL,
-    decode_responses=True  # string 자동 디코딩
-)
+# r = redis.from_url(
+#     REDIS_URL,
+#     decode_responses=True  # string 자동 디코딩
+# )
+
 
 try:
     pong = r.ping()

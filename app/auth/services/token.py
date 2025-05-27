@@ -12,12 +12,13 @@ import secrets
 from fastapi import HTTPException, status
 import hashlib
 from app.key_collection import REDIS_URL
+from app.redis_setup import r
 
 # Redis 연결
-r = redis.from_url(
-    REDIS_URL,
-    decode_responses=True  # string 자동 디코딩
-)
+# r = redis.from_url(
+#     REDIS_URL,
+#     decode_responses=True  # string 자동 디코딩
+# )
 
 try:
     pong = r.ping()

@@ -172,3 +172,58 @@ async def dynamic_crud(req: CrudRequest, db: Session = Depends(get_db)):
 
     else:
         raise HTTPException(status_code=400, detail="Invalid action")
+
+
+@router.post("/user/navigation/{nav_id}/preload_alerts")
+def preload_alerts(nav_id: int, db: Session = Depends(get_db)):
+    alert_config = {
+        "outbreak": {
+            "model": Outbreak,
+            "fields": ["event_type", "period", "message", "loc"]
+        },
+        "vsl": {
+            "model": Vsl,
+            "fields": ["loc", "default_speed_limit", "cur_speed_limit"]
+        },
+        "dincident": {
+            "model": DangerousIncident,
+            "fields": ["loc", "period"]
+        },
+        "caution": {
+            "model": Caution,
+            "fields": ["message", "loc"]
+        },
+    }
+
+    alert_data = {}
+
+    for key, config in alert_config.items():
+        Model = config["model"]
+        fields = config["fields"]
+
+        rows = db.query(Model).filter(Model.navigation_id == nav_id).all()
+        if not rows:
+            continue
+
+        filtered_rows = []
+        for row in rows:
+            data = {}
+            for field in fields:
+                value = getattr(row, field, None)
+                if hasattr(value, "isoformat"):
+                    value = value.isoformat()
+                data[field] = value
+            filtered_rows.append(data)
+
+        alert_data[key] = filtered_rows
+
+    if not alert_data:
+        raise HTTPException(status_code=404, detail="해당 경로에 알림 정보 없음")
+
+    r.set(f"navigation:{nav_id}:alert", json.dumps(alert_data), ex=3600)
+    return {
+        "message": f"navigation {nav_id} alert 정보 캐싱 완료",
+        "keys": list(alert_data.keys()),
+        "count": {k: len(v) for k, v in alert_data.items()}
+    }
+

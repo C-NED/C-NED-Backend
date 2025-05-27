@@ -33,24 +33,69 @@ except Exception as e:
     print("Redis 연결 오류:", e)
 
 @router.get("/user/navigation/guide/{navigation_id}")
-def get_guide_by_navigation_id(navigation_id: int,db: Session = Depends(get_db) ):
-    guide_steps = db.query(Guide).filter(Guide.navigation_id == navigation_id).order_by(Guide.step_order).all()
+def get_guide_by_navigation_id(navigation_id: int, db: Session = Depends(get_db)):
+    guide_steps = (
+        db.query(Guide)
+        .filter(Guide.navigation_id == navigation_id)
+        .order_by(Guide.step_order)
+        .all()
+    )
+
     if not guide_steps:
         raise HTTPException(status_code=404, detail="guide not found")
 
+    # path에서 시작, 끝 점 가져오기
+    first_path_point = (
+        db.query(Path)
+        .filter(Path.navigation_id == navigation_id)
+        .order_by(Path.step_order.asc())
+        .first()
+    )
+
+    last_path_point = (
+        db.query(Path)
+        .filter(Path.navigation_id == navigation_id)
+        .order_by(Path.step_order.desc())
+        .first()
+    )
+
+    # sandwich 구조로 guide에 앞뒤 추가
+    full_guide = []
+
+    if first_path_point:
+        full_guide.append({
+            "pointidx": first_path_point.pointidx,
+            "instructions": "출발합니다.",
+            "distance": 0,
+            "duration": 0,
+            "step_order": -1,  # 가짜 step_order
+        })
+
+    full_guide.extend([
+        {
+            "pointidx": step.pointidx,
+            "instructions": step.instructions,
+            "distance": step.distance,
+            "duration": step.duration,
+            "step_order": step.step_order,
+        }
+        for step in guide_steps
+    ])
+
+    if last_path_point:
+        full_guide.append({
+            "pointidx": last_path_point.pointidx,
+            "instructions": "목적지에 도착했습니다.",
+            "distance": 0,
+            "duration": 0,
+            "step_order": 9999,  # 가짜 step_order
+        })
+
     return {
         "navigation_id": navigation_id,
-        "guide": [
-            {
-                "pointidx": step.pointidx,
-                "instructions": step.instructions,
-                "distance": step.distance,
-                "duration": step.duration,
-                "step_order": step.step_order,  # [lon, lat]
-            }
-            for step in guide_steps
-        ]
+        "guide": full_guide
     }
+
 
 @router.post("/user/navigation/{nav_id}/preload_path")
 def preload_path(nav_id: int, db: Session = Depends(get_db)):

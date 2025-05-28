@@ -312,7 +312,7 @@ def preload_all(nav_id: int, db: Session = Depends(get_db)):
 def get_cached_all(nav_id: int):
     path_key = f"navigation:{nav_id}:guide_path"
     alert_key = f"navigation:{nav_id}:alert"
-    road_info_key = f"navigation:{nav_id}:lane_estimation"
+    road_info_key = f"navigation:{nav_id}:lane"
 
     cached_path = r.get(path_key)
     cached_alerts = r.get(alert_key)

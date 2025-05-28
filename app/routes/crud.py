@@ -279,7 +279,7 @@ def preload_path_with_lane(nav_id: int, db: Session = Depends(get_db)):
             "lane_count": lane_count
         })
 
-    r.set(f"navigation:{nav_id}:lane_estimation", json.dumps(response_list), ex=7200)
+    r.set(f"navigation:{nav_id}:lane", json.dumps(response_list), ex=7200)
 
     return {"status": "ok", "count": len(response_list)}
 
@@ -331,5 +331,5 @@ def get_cached_all(nav_id: int):
     return {
         "path": path_data,
         "alerts": alert_data,
-        "road_info": road_info_data
+        "lane": road_info_data
     }

@@ -55,21 +55,22 @@ def get_guide_by_navigation_id(navigation_id: int,db: Session = Depends(get_db) 
 
 @router.post("/user/navigation/{nav_id}/preload_path")
 def preload_path(nav_id: int, db: Session = Depends(get_db)):
-    guide = db.query(Guide).filter(Guide.navigation_id == nav_id).all()
-    if not guide:
-        raise HTTPException(status_code=404, detail="안내 정보 없음")
+    # 다 가져오는 걸로 수정
+    # guide = db.query(Guide).filter(Guide.navigation_id == nav_id).all()
+    # if not guide:
+    #     raise HTTPException(status_code=404, detail="안내 정보 없음")
 
-    guide_indices = [g.pointidx for g in guide]
-    extended = set(i + d for i in guide_indices for d in [-1, 0, 1])
+    # guide_indices = [g.pointidx for g in guide]
+    # extended = set(i + d for i in guide_indices for d in [-1, 0, 1])
 
-    # 🔥 출발점 & 도착점 포함시키기
-    start_path = db.query(Path.pathidx).filter(Path.navigation_id == nav_id).order_by(Path.step_order.asc()).first()
-    end_path = db.query(Path.pathidx).filter(Path.navigation_id == nav_id).order_by(Path.step_order.desc()).first()
+    # # 🔥 출발점 & 도착점 포함시키기
+    # start_path = db.query(Path.pathidx).filter(Path.navigation_id == nav_id).order_by(Path.step_order.asc()).first()
+    # end_path = db.query(Path.pathidx).filter(Path.navigation_id == nav_id).order_by(Path.step_order.desc()).first()
 
-    if start_path:
-        extended.add(start_path[0])
-    if end_path:
-        extended.add(end_path[0])
+    # if start_path:
+    #     extended.add(start_path[0])
+    # if end_path:
+    #     extended.add(end_path[0])
 
     # pathidx, path_loc, step_order 가져오기
     path_rows = db.query(Path.pathidx, Path.path_loc, Path.step_order)\

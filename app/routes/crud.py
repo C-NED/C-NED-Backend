@@ -262,7 +262,7 @@ def estimate_lane_count(road_name: str) -> int:
 
 # 차선 정보 캐싱 API
 @router.post("/user/navigation/{nav_id}/preload_road_info", response_model=None)
-def preload_path_with_lane(nav_id: int, db: Session = Depends(get_db)):
+def preload_road_info(nav_id: int, db: Session = Depends(get_db)):
 
     road_sections = (
         db.query(RoadSection.pointidx, RoadSection.name)

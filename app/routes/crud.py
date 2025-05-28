@@ -53,11 +53,11 @@ def get_guide_by_navigation_id(navigation_id: int,db: Session = Depends(get_db) 
         ]
     }
 
+# ✅ 수정 후 preload_path
 @router.post("/user/navigation/{nav_id}/preload_path")
 def preload_path(nav_id: int, db: Session = Depends(get_db)):
     path_rows = db.query(Path.pathidx, Path.path_loc, Path.step_order)\
                   .filter(Path.navigation_id == nav_id)\
-                  .order_by(Path.step_order.asc())\
                   .all()
 
     if not path_rows:
@@ -68,20 +68,9 @@ def preload_path(nav_id: int, db: Session = Depends(get_db)):
         for pathidx, path_loc, step_order in path_rows
     ]
 
-    # Redis에 저장
     r.set(f"navigation:{nav_id}:guide_path", json.dumps(guide_path), ex=3600)
     return {"message": f"navigation {nav_id} path 캐싱 완료", "count": len(guide_path)}
 
-
-@router.get("/user/navigation/{nav_id}/get_cached_path")
-def get_cached_path(nav_id: int):
-    key = f"navigation:{nav_id}:guide_path"
-    cached = r.get(key)
-
-    if not cached:
-        raise HTTPException(status_code=404, detail="캐시된 경로 없음")
-
-    return json.loads(cached)
 
 
 # crud_map.py

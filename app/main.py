@@ -12,7 +12,7 @@ from fastapi.staticfiles import StaticFiles
 from app.auth.routes import router as token
 from app.models.db_model.base import Base
 from app.routes.crud import router as crud
-from app.routes.websocket import router as websocket_router  # 예시 경로
+from app.routes.ai_ws import router as websocket_router  # 예시 경로
 
 from sqlalchemy.orm import relationship
 from app.models.db_model.road_info import RoadInfo

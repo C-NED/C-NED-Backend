@@ -12,6 +12,7 @@ from fastapi.staticfiles import StaticFiles
 from app.auth.routes import router as token
 from app.models.db_model.base import Base
 from app.routes.crud import router as crud
+from app.routes.websocket import router as websocket_router  # 예시 경로
 
 from sqlalchemy.orm import relationship
 from app.models.db_model.road_info import RoadInfo
@@ -19,6 +20,7 @@ from app.models.db_model.caution import Caution
 import time
 import pymysql
 from .middleware import setup_cors
+
 
 # # 👇 여기에 모든 모델 import를 명시적으로 추가!
 # from app.models.db_model.user import User
@@ -188,6 +190,7 @@ app.include_router(search,prefix="/navigation",tags=["navigation"])
 app.include_router(alert,prefix="/alert",tags=["Alert"])
 app.include_router(token,prefix="/auth",tags=["auth"])
 app.include_router(crud,prefix="/crud",tags=["CRUD"])
+app.include_router(websocket_router)
 
 from app.models.db_model.base import Base
 
